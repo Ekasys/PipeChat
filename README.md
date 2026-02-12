@@ -1,95 +1,42 @@
-# PipelinePro v1.0
+# PipeChat
 
-PipelinePro is an all-in-one GovCon SaaS platform with two backend services behind one frontend:
+PipeChat is the unified app that combines PipelinePro and EkChat into one frontend with two backend services.
 
-- `backend` (`/api/v1/*`) for core PipelinePro modules.
-- `ekchat-api` (`/api/ekchat/v1/*`) for chat, file handling, and phased RFP features.
+## Architecture
 
-## Features
+- `frontend` (React + Vite): single UI for PipelinePro + EkChat.
+- `backend` (`/api/v1/*`): core PipelinePro APIs.
+- `services/ekchat-api` (`/api/ekchat/v1/*`): EkChat chat, RAG, files, and generation workflows.
+- `postgres` + `redis`: shared data and cache/session services.
 
-- Authentication & Security: JWT auth, RBAC, MFA, tenant isolation.
-- Core modules: Dashboard, Opportunities, CRM, Proposals, PTW/PWin, Teaming, Admin.
-- AI modules: AI Assistant and Ekchat.
-- Multi-tenant AI provider routing (including Azure OpenAI).
-- Shared Postgres with tenant-aware schema isolation (`public` + `ekchat`).
-
-## Technology Stack
-
-- Backend: FastAPI, SQLAlchemy, PostgreSQL, Redis
-- Frontend: React, TypeScript, Vite
-- Storage: Azure Blob Storage (with local fallback for development)
-- Deployment: Docker, Azure Container Apps
-
-## Quick Start
-
-### Docker setup (recommended)
+## Quick Start (Docker)
 
 ```bash
-docker-compose up -d
+docker compose up -d --build
+docker compose exec backend alembic upgrade head
+docker compose exec backend python setup_admin_simple.py
 ```
 
-Run migrations from the backend container:
+Open:
 
-```bash
-docker-compose exec backend alembic upgrade head
-```
-
-Endpoints:
-
+- App: `http://localhost:5173`
 - PipelinePro API docs: `http://localhost:8000/api/docs`
-- Ekchat API docs: `http://localhost:8001/api/ekchat/docs`
-- Frontend: `http://localhost:5173`
+- EkChat API docs: `http://localhost:8001/api/ekchat/docs`
 
-### Local backend setup
+Default login after setup:
 
-Core backend:
+- Email: `admin@pipelinepro.com`
+- Password: `admin123`
 
-```bash
-cd backend
-pip install -r requirements.txt
-alembic upgrade head
-uvicorn app.main:app --reload --port 8000
-```
+## Feature Flags (Tenant Settings)
 
-Ekchat backend:
-
-```bash
-cd services/ekchat-api
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8001
-```
-
-Frontend:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-## Key Configuration
-
-Core backend:
-
-- `DATABASE_URL`
-- `SECRET_KEY`
-- `ALGORITHM`
-
-Ekchat backend:
-
-- `DATABASE_URL`
-- `SECRET_KEY`
-- `ALGORITHM`
-- `AZURE_STORAGE_CONNECTION_STRING`
-- `EKCHAT_BLOB_CONTAINER`
-- `EKCHAT_DEFAULT_MODEL`
-
-Tenant feature flags (`tenants.settings` JSON):
+`tenants.settings` supports:
 
 - `ekchat_chat_enabled`
 - `ekchat_rag_enabled`
 - `ekchat_rfp_enabled`
 
-## License
+## Notes
 
-Proprietary - All rights reserved
+- Ollama local endpoint (dev default): `http://host.docker.internal:11434`
+- Azure-ready path is included: Azure OpenAI, Azure Blob, Azure Container Apps, and PostgreSQL schema isolation (`public` + `ekchat`).
