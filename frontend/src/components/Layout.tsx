@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react'
+import { ElementType, ReactNode, useEffect, useMemo, useState } from 'react'
 import {
   Box,
   AppBar,
@@ -8,6 +8,7 @@ import {
   List,
   ListItem,
   ListItemButton,
+  ListItemIcon,
   ListItemText,
   Collapse,
   useMediaQuery,
@@ -20,6 +21,17 @@ import {
   ExpandMore as ExpandMoreIcon,
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
+  DashboardRounded,
+  WorkOutlineRounded,
+  InsightsRounded,
+  PeopleOutlineRounded,
+  ShowChartRounded,
+  CalculateOutlined,
+  GroupsOutlined,
+  AutoAwesomeRounded,
+  ApartmentRounded,
+  AdminPanelSettingsRounded,
+  ChatBubbleOutlineRounded,
 } from '@mui/icons-material'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../hooks/redux'
@@ -34,18 +46,18 @@ interface LayoutProps {
 const drawerWidth = 240
 const mobileDrawerWidth = 0
 
-const pipelineMenuItems = [
-  { text: 'Dashboard', path: '/dashboard' },
-  { text: 'Opportunities', path: '/opportunities' },
-  { text: 'Market Intelligence', path: '/market-intel' },
-  { text: 'CRM', path: '/crm' },
-  { text: 'Price-to-Win', path: '/ptw' },
-  { text: 'PWin Calculator', path: '/pwin' },
-  { text: 'Teaming', path: '/teaming' },
-  { text: 'AI Assistant', path: '/ai-assistant' },
-  { text: 'Company Profile', path: '/company-profile' },
-  { text: 'Admin', path: '/admin' },
-] as const
+const pipelineMenuItems: Array<{ text: string; path: string; icon: ElementType }> = [
+  { text: 'Dashboard', path: '/dashboard', icon: DashboardRounded },
+  { text: 'Opportunities', path: '/opportunities', icon: WorkOutlineRounded },
+  { text: 'Market Intelligence', path: '/market-intel', icon: InsightsRounded },
+  { text: 'CRM', path: '/crm', icon: PeopleOutlineRounded },
+  { text: 'Price-to-Win', path: '/ptw', icon: ShowChartRounded },
+  { text: 'PWin Calculator', path: '/pwin', icon: CalculateOutlined },
+  { text: 'Teaming', path: '/teaming', icon: GroupsOutlined },
+  { text: 'AI Assistant', path: '/ai-assistant', icon: AutoAwesomeRounded },
+  { text: 'Company Profile', path: '/company-profile', icon: ApartmentRounded },
+  { text: 'Admin', path: '/admin', icon: AdminPanelSettingsRounded },
+]
 
 function parseEkchatSelection(search: string) {
   const params = new URLSearchParams(search)
@@ -154,16 +166,15 @@ export default function Layout({ children }: LayoutProps) {
             component="div"
             sx={{
               flexGrow: 1,
-              fontWeight: 800,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              fontWeight: 700,
+              color: 'text.primary',
+              letterSpacing: '0.01em',
             }}
           >
             PipelinePro
           </Typography>
           {!isMobile && (
-            <Typography variant="body2" sx={{ mr: 2 }}>
+            <Typography variant="body2" sx={{ mr: 2, color: 'text.secondary' }}>
               {user?.email}
             </Typography>
           )}
@@ -176,7 +187,7 @@ export default function Layout({ children }: LayoutProps) {
           >
             {mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
           </IconButton>
-          <Typography variant="body2" sx={{ cursor: 'pointer' }} onClick={handleLogout}>
+          <Typography variant="body2" sx={{ cursor: 'pointer', color: 'text.secondary' }} onClick={handleLogout}>
             Logout
           </Typography>
         </Toolbar>
@@ -196,14 +207,17 @@ export default function Layout({ children }: LayoutProps) {
         ModalProps={{ keepMounted: true }}
       >
         <Toolbar />
-        <Box sx={{ overflow: 'auto' }}>
+        <Box sx={{ overflow: 'auto', py: 1 }}>
           <List>
             <ListItem disablePadding>
               <ListItemButton
                 selected={location.pathname !== '/ekchat'}
                 onClick={() => setPipelineOpen((prev) => !prev)}
               >
-                <ListItemText primary="PipelinePro" />
+                <ListItemText
+                  primary="PipelinePro"
+                  primaryTypographyProps={{ fontWeight: 700, fontSize: 16 }}
+                />
                 {pipelineOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItemButton>
             </ListItem>
@@ -216,7 +230,13 @@ export default function Layout({ children }: LayoutProps) {
                       sx={{ pl: 4 }}
                       onClick={() => navigateTo(item.path)}
                     >
-                      <ListItemText primary={item.text} />
+                      <ListItemIcon>
+                        <item.icon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.text}
+                        primaryTypographyProps={{ fontSize: 17, fontWeight: 500, textTransform: 'none' }}
+                      />
                     </ListItemButton>
                   </ListItem>
                 ))}
@@ -227,7 +247,13 @@ export default function Layout({ children }: LayoutProps) {
                 selected={isEkchatRoute}
                 onClick={() => setEkchatOpen((prev) => !prev)}
               >
-                <ListItemText primary="EkChat" />
+                <ListItemIcon>
+                  <ChatBubbleOutlineRounded fontSize="small" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="EkChat"
+                  primaryTypographyProps={{ fontWeight: 700, fontSize: 16 }}
+                />
                 {ekchatOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItemButton>
             </ListItem>
@@ -372,7 +398,7 @@ export default function Layout({ children }: LayoutProps) {
           flexGrow: 1,
           display: 'flex',
           flexDirection: 'column',
-          p: isEkchatRoute ? 0 : { xs: 2, sm: 3 },
+          p: isEkchatRoute ? 0 : { xs: 1.5, sm: 2.25 },
           height: isEkchatRoute
             ? '100dvh'
             : 'auto',
