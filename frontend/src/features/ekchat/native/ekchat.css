@@ -1,0 +1,3080 @@
+.ekchat-root{
+    /* VS Code Light-ish */
+    --bg: #f6f7fb;
+    --panel: #ffffff;
+    --sidebar: #f7f9fc;
+    --rightbar: #f7f9fc;
+
+    --text: #0f172a;
+    --muted: #4b5563;
+    --border: #e5e7eb;
+
+    /* VS Code blue */
+    --accent: #007acc;
+    --accent-600: #0e639c;
+    --accent-50: #e6f2ff;
+
+    --danger: #ef4444;
+    --danger-50: #fef2f2;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 18px rgba(0,0,0,.06);
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 18px;
+    --chip: #eef2ff;
+
+    --composer-bg: #ffffff;
+    --composer-border: #d9dde7;
+    --content-max: 1100px;
+  }
+  
+  /* ------ VS Code Dark ------ */
+  .ekchat-root[data-theme="dark"]{
+    --bg: #131415;
+    --panel: #17181a;
+    --sidebar: #1b1d1f;
+    --rightbar: #1b1d1f;
+  
+    --text: #e8eaed;
+    --muted: #9aa0a6;
+    --border: #2b2f33;
+  
+    --accent: #8ab4f8;
+    --accent-600: #6f9ff6;
+    --accent-50: rgba(138,180,248,0.14);
+  
+    --danger: #ea4335;
+    --danger-50: rgba(234,67,53,0.16);
+
+    --shadow: 0 8px 24px rgba(0,0,0,0.28), 0 20px 50px rgba(0,0,0,0.35);
+    --chip: rgba(255,255,255,0.06);
+
+    --composer-bg: #1c1e20;
+    --composer-border: #2b2f33;
+    --content-max: 1100px;
+  }
+  
+  * { box-sizing: border-box; }
+  .ekchat-root { height: 100%; }.ekchat-root { 
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ===== Toasts ===== */
+.toast-viewport{
+  position: fixed;
+  top: 70px;
+  right: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+  pointer-events: none;
+}
+.toast{
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: min(360px, calc(100vw - 24px));
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  animation: toast-in 200ms ease-out;
+}
+.toast.error{
+  background: color-mix(in oklab, var(--panel) 88%, var(--danger-50) 12%);
+}
+.toast-message{
+  flex: 1;
+  font-size: 0.92rem;
+  line-height: 1.3;
+}
+.toast-close{
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity .15s ease, color .15s ease;
+  padding: 2px 4px;
+}
+.toast:hover .toast-close{ opacity: 1; }
+.toast-close:hover{ color: var(--text); }
+.toast.closing{
+  animation: toast-out 160ms ease-in forwards;
+}
+@keyframes toast-in{
+  from{ opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to{ opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes toast-out{
+  from{ opacity: 1; transform: translateY(0) scale(1); }
+  to{ opacity: 0; transform: translateY(-6px) scale(0.97); }
+}
+  
+  /* ===== App shell ===== */
+  .app-shell {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+  }
+  
+  /* Top bar */
+  .topbar {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+    position: sticky; top: 0; z-index: 5;
+  }
+  .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .2px; }
+  .brand .botmark {
+    width: 28px; height: 28px; border-radius: 9px;
+    background: linear-gradient(155deg, var(--accent) 0%, var(--accent-600) 90%);
+    box-shadow: 0 4px 14px color-mix(in oklab, var(--accent) 28%, transparent);
+  }
+  .topbar .actions { display: flex; align-items: center; gap: 8px; }
+  
+  /* Icon & primary buttons */
+  .icon-btn{
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    background: var(--panel); cursor: pointer;
+    transition: transform .05s ease, background .15s ease, border-color .15s ease;
+    color: var(--text);
+  }
+  .icon-btn:hover{ background: color-mix(in oklab, var(--panel) 92%, var(--accent) 8%); }
+  .icon-btn:active{ transform: translateY(1px); }
+  .icon-btn.active{
+    border-color: color-mix(in oklab, var(--accent) 45%, var(--border) 55%);
+    background: color-mix(in oklab, var(--panel) 80%, var(--accent-50) 20%);
+    color: var(--accent-600);
+    box-shadow: 0 6px 18px color-mix(in oklab, var(--accent) 25%, transparent);
+  }
+  .ekchat-root[data-theme="dark"] .icon-btn.active{
+    background: color-mix(in oklab, var(--panel) 78%, var(--accent-50) 22%);
+    border-color: color-mix(in oklab, var(--accent) 45%, var(--border) 55%);
+    color: var(--accent);
+    box-shadow: 0 10px 24px color-mix(in oklab, var(--accent) 25%, transparent);
+  }
+  
+  .btn-primary{
+    height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent;
+    background: var(--accent); color: #fff; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items:center; gap: 8px;
+    box-shadow: 0 10px 20px color-mix(in oklab, var(--accent) 20%, transparent);
+  }
+  .btn-primary:hover{ background: var(--accent-600); }
+  
+  /* ===== Left rail ===== */
+  .sidebar{
+    grid-row: 2; grid-column: 1;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+    width: 280px;
+    transition: width .18s ease;
+    overflow: hidden;
+  }
+  .sidebar.collapsed { width: 64px; }
+  .sidebar.collapsed:hover { width: 280px; } /* hover-to-expand */
+  
+  .sidebar-inner{ height: 100%; display:flex; flex-direction:column; }
+  .sidebar-head{ padding: 12px; display:flex; gap: 8px; align-items:center; justify-content: space-between; }
+  .sidebar-title{ font-weight: 700; color: var(--muted); letter-spacing:.3px; }
+  
+  /* Chat items */
+  .chat-list{ padding: 8px 10px 16px; overflow: auto; flex: 1; }
+  .chat-item{
+    display:flex; align-items:center; gap: 10px;
+    padding: 8px 10px; border-radius: 10px; cursor:pointer;
+    color: var(--text);
+  }
+  .chat-item:hover{ background: var(--panel); box-shadow: var(--shadow); }
+  .chat-item.active{ background: var(--panel); border: 1px solid var(--accent); }
+  .sidebar .chat-item .label{ display:block; flex:1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar .chat-item .badge{ font-size: 11px; color: var(--muted); background: var(--chip); padding: 2px 6px; border-radius: 999px; }
+  .chat-item .close{ opacity: 0; transition: opacity .15s ease; color: var(--muted); }
+  .chat-item:hover .close{ opacity: 1; }
+  
+  /* Collapsed behavior */
+  .sidebar.collapsed .sidebar-title{ opacity: 0; width:0; }
+  .sidebar.collapsed .chat-item .label,
+  .sidebar.collapsed .chat-item .badge{ display:none; }
+  /* Reveal on hover-open */
+  .sidebar.collapsed:hover .sidebar-title{ opacity:1; width:auto; }
+  .sidebar.collapsed:hover .chat-item .label,
+  .sidebar.collapsed:hover .chat-item .badge{ display:block; }
+  
+  /* ===== Main area ===== */
+  .main{ grid-row: 2; grid-column: 2; display:flex; height: calc(100vh - 56px); }
+  
+  /* Chat window */
+  .chat-window{ position: relative; flex: 1; display:flex; flex-direction:column; }
+  .chat-header{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .chat-header .chat-title-button{
+    border: none;
+    background: none;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 1.02rem;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 8px;
+    transition: background .15s ease, color .15s ease;
+  }
+  .chat-header .chat-title-button:hover{
+    background: color-mix(in oklab, var(--accent-50) 30%, transparent 70%);
+    color: color-mix(in oklab, var(--accent-600) 55%, var(--text) 45%);
+  }
+  .chat-header .chat-title-input{
+    font: inherit;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    background: var(--panel);
+    color: var(--text);
+    min-width: 160px;
+  }
+  .ekchat-root[data-theme="dark"] .chat-header .chat-title-input{
+    border-color: color-mix(in oklab, var(--border) 70%, var(--text) 30%);
+    background: color-mix(in oklab, var(--panel) 88%, var(--bg) 12%);
+  }
+  .chat-header .chat-title-placeholder{
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .chat-header-spacer{ flex:1; }
+  .chat-header-actions{ display:flex; align-items:center; gap: 8px; }
+  .chat-clear-btn{
+    height: 30px;
+    padding: 0 10px;
+    font-size: 0.82rem;
+  }
+  .messages{ flex: 1; overflow: auto; padding: 28px 0 36px; }
+  .messages-inner{
+    width: 100%;
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 0 26px;
+    display:flex;
+    flex-direction:column;
+  }
+  .message{
+    display:flex;
+    gap: 14px;
+    margin: 16px 0;
+    align-items: flex-start;
+    width: 100%;
+    padding: 0 6px;
+  }
+  .message .avatar{
+    width: 28px; height: 28px; border-radius: 999px; flex: 0 0 auto;
+    display:flex; align-items:center; justify-content:center;
+    background: var(--panel); border: 1px solid var(--border);
+  }
+  .message .avatar .avatar-initial{
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1;
+    color: color-mix(in oklab, var(--text) 90%, var(--muted) 10%);
+  }
+  .message .bubble{
+    flex: 1;
+    display:flex;
+    justify-content:flex-start;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+  .message .message-body{
+    flex: 1 1 min(840px, 100%);
+    max-width: min(840px, 100%);
+    padding: 12px 0;
+  }
+  .message.assistant .message-body{
+    padding-right: 12px;
+  }
+  .message.user{
+    flex-direction: row-reverse;
+  }
+  .message.user .bubble{
+    justify-content:flex-end;
+  }
+  .message.user .message-body{
+    flex: 0 1 auto;
+    display: inline-flex;
+    flex-direction: column;
+    max-width: min(640px, 100%);
+    width: fit-content;
+    padding: 8px 12px;
+    background: color-mix(in oklab, var(--accent-50) 58%, transparent 42%);
+    border-radius: 14px;
+    border: 1px solid color-mix(in oklab, var(--accent) 22%, var(--border) 78%);
+    box-shadow: none;
+  }
+  .ekchat-root[data-theme="dark"] .message.user .message-body{
+    background: color-mix(in oklab, var(--panel) 82%, var(--accent-50) 18%);
+    border-color: color-mix(in oklab, var(--accent) 30%, var(--border) 70%);
+  }
+  .message.user .avatar{ background: var(--accent-50); border-color: color-mix(in oklab, var(--accent) 30%, var(--border) 70%); }
+  .message .bubble .message-chunk + .message-chunk{ margin-top: 16px; }
+  .message .attachment-list{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .message .attachment-item{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in oklab, var(--border) 75%, transparent 25%);
+    background: color-mix(in oklab, var(--panel) 92%, var(--accent-50) 8%);
+    color: var(--text);
+    text-decoration: none;
+    max-width: 100%;
+  }
+  .message .attachment-item:hover{
+    border-color: color-mix(in oklab, var(--accent) 35%, var(--border) 65%);
+    color: color-mix(in oklab, var(--text) 80%, var(--accent-600) 20%);
+  }
+  .message .attachment-icon{
+    width: 16px;
+    height: 16px;
+    color: var(--accent-600);
+    flex: 0 0 auto;
+  }
+  .message .attachment-name{
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ekchat-root[data-theme="dark"] .message .attachment-item{
+    background: color-mix(in oklab, var(--panel) 88%, var(--accent-50) 12%);
+    border-color: color-mix(in oklab, var(--border) 70%, var(--accent) 30%);
+  }
+  .message.analysis .message-body{
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px dashed color-mix(in oklab, var(--border) 70%, var(--accent-50) 30%);
+    background: color-mix(in oklab, var(--panel) 92%, var(--accent-50) 8%);
+    color: color-mix(in oklab, var(--text) 75%, var(--muted) 25%);
+  }
+  .ekchat-root[data-theme="dark"] .message.analysis .message-body{
+    background: color-mix(in oklab, var(--panel) 90%, var(--bg) 10%);
+    border-color: color-mix(in oklab, var(--border) 70%, var(--bg) 30%);
+  }
+  .message.thinking .message-body{
+    color: var(--muted);
+  }
+  .status-block{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .status-row{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .status-spinner{
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    border: 2px solid color-mix(in oklab, var(--border) 70%, transparent 30%);
+    border-top-color: var(--accent-600);
+    animation: spin 0.85s linear infinite;
+  }
+  .ekchat-root[data-theme="dark"] .status-spinner{
+    border-color: color-mix(in oklab, var(--border) 65%, var(--bg) 35%);
+    border-top-color: var(--accent-600);
+  }
+  @keyframes spin{
+    to{ transform: rotate(360deg); }
+  }
+
+  .citations-block{
+    margin-top: 14px;
+    padding: 14px 16px;
+    border: 1px solid color-mix(in oklab, var(--border) 80%, var(--accent-50) 20%);
+    border-radius: var(--radius);
+    background: color-mix(in oklab, var(--panel) 88%, var(--accent-50) 12%);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  }
+  .ekchat-root[data-theme="dark"] .citations-block{
+    background: color-mix(in oklab, var(--panel) 88%, var(--bg) 12%);
+    border-color: color-mix(in oklab, var(--border) 70%, var(--bg) 30%);
+    box-shadow: var(--shadow);
+  }
+  .citations-title{
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .ekchat-root[data-theme="dark"] .citations-title{
+    color: color-mix(in oklab, var(--muted) 65%, var(--text) 35%);
+  }
+  .citations-grid{
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .citation-card{
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    background: var(--panel);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color .15s ease, background .15s ease, transform .12s ease;
+  }
+  .citation-card:hover{
+    border-color: color-mix(in oklab, var(--accent) 35%, var(--border) 65%);
+    background: color-mix(in oklab, var(--panel) 90%, var(--accent-50) 10%);
+    transform: translateY(-1px);
+  }
+  .ekchat-root[data-theme="dark"] .citation-card{
+    background: color-mix(in oklab, var(--panel) 88%, var(--bg) 12%);
+    border-color: color-mix(in oklab, var(--border) 70%, var(--bg) 30%);
+  }
+  .ekchat-root[data-theme="dark"] .citation-card:hover{
+    background: color-mix(in oklab, var(--panel) 85%, var(--accent-50) 15%);
+    border-color: color-mix(in oklab, var(--accent) 40%, var(--border) 60%);
+  }
+  .citation-index{
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    background: var(--accent-50);
+    color: var(--accent-600);
+    font-weight: 700;
+    font-size: 0.85rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink: 0;
+  }
+  .ekchat-root[data-theme="dark"] .citation-index{
+    background: color-mix(in oklab, var(--accent) 34%, transparent 66%);
+    color: color-mix(in oklab, var(--text) 80%, var(--accent) 20%);
+  }
+  .citation-copy{
+    display:flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .citation-title{
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .citation-link{
+    font-size: 0.75rem;
+    color: var(--muted);
+    word-break: break-word;
+  }
+  .ekchat-root[data-theme="dark"] .citation-link{
+    color: color-mix(in oklab, var(--muted) 70%, var(--text) 30%);
+  }
+  .citations-extra{
+    margin-top: 12px;
+    font-size: 0.92rem;
+  }
+  .citations-extra a{ text-decoration: none; }
+  .ekchat-root[data-theme="dark"] .citations-extra a{ color: var(--accent); }
+  
+  /* Markdown */
+  .md { line-height: 1.6; color: var(--text); }
+  .md p { margin: 0.4rem 0; }
+  .md strong, .md b { font-weight: 700; }
+  .md em, .md i { font-style: italic; }
+  .md ul, .md ol { padding-left: 1.25rem; margin: 0.5rem 0; }
+  .md li + li { margin-top: 0.25rem; }
+  .md h1, .md h2, .md h3, .md h4 { margin: .6rem 0 .3rem; font-weight: 700; }
+  .md h1 { font-size: 1.5rem; } .md h2 { font-size: 1.3rem; } .md h3 { font-size: 1.15rem; }
+  .md code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: .92em; }
+  .md pre { overflow-x: auto; padding: 12px; background: color-mix(in oklab, var(--panel) 80%, #000 20%); border: 1px solid var(--border); border-radius: 8px; }
+  .md a{
+    color: var(--accent-600);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color .15s ease;
+  }
+  .md a:hover{ color: color-mix(in oklab, var(--accent-600) 70%, var(--accent) 30%); }
+  .ekchat-root[data-theme="dark"] .md a{ color: var(--accent); }
+  .ekchat-root[data-theme="dark"] .md a:hover{ color: color-mix(in oklab, var(--accent) 80%, #ffffff 20%); }
+  .md img { max-width: 100%; height: auto; display: block; margin: 8px 0; border: 1px solid var(--border); border-radius: 8px; }
+  .md .md-table-wrap { overflow-x: auto; margin: .6rem 0; }
+  .md table { width: 100%; border-collapse: collapse; margin: .6rem 0; }
+  .md th, .md td { border: 1px solid var(--border); padding: 8px 10px; vertical-align: top; }
+  .md th { background: color-mix(in oklab, var(--panel) 92%, var(--text) 8%); text-align: left; }
+  
+  /* Composer / input */
+  .composer-shell{
+    padding: 12px 14px 16px;
+    border-top: none;
+    background: transparent;
+  }
+  .composer{
+    margin: 0 auto;
+    width: 100%;
+    max-width: var(--content-max);
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+  }
+  .composer .input{
+    flex: 1;
+    display:flex;
+    flex-direction: column;
+    border: 1px solid var(--composer-border);
+    border-radius: 14px;
+    background: var(--composer-bg);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    overflow: visible;
+    max-width: 960px;
+  }
+  .ekchat-root[data-theme="dark"] .composer .input{
+    box-shadow: 0 18px 42px rgba(2, 6, 23, 0.55);
+  }
+  .composer.web-mode .input{
+    background: color-mix(in oklab, var(--composer-bg) 82%, var(--accent-50) 18%);
+    box-shadow: 0 12px 26px rgba(37, 99, 235, 0.16);
+  }
+  .ekchat-root[data-theme="dark"] .composer.web-mode .input{
+    background: color-mix(in oklab, var(--composer-bg) 82%, var(--accent-50) 18%);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  }
+  .composer .textarea-shell{
+    position: relative;
+    flex: 1;
+    min-height: 18px;
+  }
+  .composer textarea{
+    width: 100%;
+    resize: none;
+    border: none;
+    outline: none;
+    font: inherit;
+    padding: 10px 16px 6px;
+    background: transparent;
+    min-height: 18px;
+    max-height: 72px;
+    color: transparent !important;
+    caret-color: var(--text);
+    -webkit-text-fill-color: transparent;
+    line-height: 1.5;
+    overflow-y: auto;
+    position: relative;
+    z-index: 1;
+  }
+  .composer textarea::selection{ background: color-mix(in oklab, var(--accent-50) 60%, var(--panel) 40%); }
+  .ekchat-root[data-theme="dark"] .composer textarea::selection{
+    background: color-mix(in oklab, var(--accent-50) 70%, var(--panel) 30%);
+  }
+  .composer textarea::placeholder{ color: var(--muted); }
+  .ekchat-root[data-theme="dark"] .composer textarea::placeholder{
+    color: color-mix(in oklab, var(--muted) 75%, var(--text) 25%);
+  }
+  .composer .textarea-highlight{
+    position: absolute;
+    inset: 0;
+    padding: 10px 16px 6px;
+    font: inherit;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow: auto;
+    pointer-events: none;
+    color: var(--text);
+    max-height: 72px;
+    scrollbar-width: none;
+  }
+  .composer .textarea-highlight::-webkit-scrollbar{ display:none; }
+  .composer .file-scope{
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 2px 14px 8px;
+    flex-wrap: wrap;
+  }
+  .composer .file-scope-label{
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-top: 4px;
+  }
+  .composer .file-scope-chips{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .composer .file-chip{
+    border: 1px solid color-mix(in oklab, var(--border) 80%, transparent 20%);
+    background: var(--chip);
+    color: color-mix(in oklab, var(--text) 70%, var(--muted) 30%);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: border-color .15s ease, background .15s ease, color .15s ease, transform .12s ease;
+  }
+  .composer .file-chip:hover{
+    border-color: color-mix(in oklab, var(--accent) 35%, var(--border) 65%);
+    color: color-mix(in oklab, var(--text) 85%, var(--accent-600) 15%);
+  }
+  .composer .file-chip:active{
+    transform: translateY(1px);
+  }
+  .composer .file-chip.active{
+    background: color-mix(in oklab, var(--accent-50) 70%, var(--chip) 30%);
+    border-color: color-mix(in oklab, var(--accent) 55%, var(--border) 45%);
+    color: color-mix(in oklab, var(--accent-600) 70%, var(--text) 30%);
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.18);
+  }
+  .ekchat-root[data-theme="dark"] .composer .file-chip{
+    background: color-mix(in oklab, var(--panel) 70%, var(--chip) 30%);
+    border-color: color-mix(in oklab, var(--border) 60%, rgba(148, 163, 184, 0.2) 40%);
+    color: color-mix(in oklab, var(--text) 70%, var(--muted) 30%);
+  }
+  .ekchat-root[data-theme="dark"] .composer .file-chip.active{
+    background: color-mix(in oklab, var(--accent-50) 70%, var(--panel) 30%);
+    border-color: color-mix(in oklab, var(--accent) 55%, var(--border) 45%);
+    color: color-mix(in oklab, var(--text) 85%, var(--accent) 15%);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.35);
+  }
+  .composer .composer-footer{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap: 12px;
+    padding: 3px 12px 5px;
+  }
+  .composer .input-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap: wrap;
+    margin-right: auto;
+  }
+  .composer .input .icon-btn{
+    width:32px;
+    height:32px;
+    border-radius: 10px;
+    background: transparent;
+    border: none;
+    color: color-mix(in oklab, var(--text) 80%, var(--muted) 20%);
+  }
+  .composer .input .model-picker{
+    position: relative;
+    display:flex;
+    align-items:center;
+    height: 32px;
+    min-width: 140px;
+    justify-content:flex-start;
+    flex: 0 0 auto;
+  }
+  .composer .input .model-display{
+    border: none;
+    background: none;
+    color: color-mix(in oklab, var(--muted) 65%, var(--text) 35%);
+    font-weight: 600;
+    font-size: 0.92rem;
+    padding: 0 4px;
+    display:flex;
+    align-items:center;
+    gap: 6px;
+    cursor: pointer;
+    transition: color .15s ease;
+    white-space: nowrap;
+  }
+  .composer .input .model-display:hover,
+  .composer .input .model-picker.open .model-display{
+    color: color-mix(in oklab, var(--accent-600) 55%, var(--text) 45%);
+  }
+  .composer .input .model-menu{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(100% + 10px);
+    min-width: 220px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    padding: 6px;
+    display:flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 20;
+  }
+  .ekchat-root[data-theme="dark"] .composer .input .model-menu{
+    background: color-mix(in oklab, var(--panel) 88%, var(--bg) 12%);
+    border-color: color-mix(in oklab, var(--border) 70%, var(--bg) 30%);
+    box-shadow: var(--shadow);
+  }
+  .composer .input .model-option{
+    border: none;
+    background: none;
+    color: var(--text);
+    text-align: left;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  .composer .input .model-option:hover{
+    background: color-mix(in oklab, var(--accent-50) 45%, var(--panel) 55%);
+  }
+  .composer .input .model-option.selected{
+    background: color-mix(in oklab, var(--accent-50) 60%, var(--panel) 40%);
+    color: color-mix(in oklab, var(--accent-600) 65%, var(--text) 35%);
+  }
+  .ekchat-root[data-theme="dark"] .composer .input .model-option.selected{
+    background: color-mix(in oklab, var(--accent-50) 55%, var(--panel) 45%);
+    color: color-mix(in oklab, var(--accent) 60%, var(--text) 40%);
+  }
+  .composer .input .icon-btn:hover{
+    background: color-mix(in oklab, var(--panel) 70%, var(--composer-bg) 30%);
+  }
+  .ekchat-root[data-theme="dark"] .composer .input .icon-btn{
+    color: color-mix(in oklab, var(--text) 75%, var(--muted) 25%);
+  }
+  .composer .input .send-btn{
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(140deg, var(--accent-600) 0%, var(--accent) 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color: #fff;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 10px 24px rgba(0, 122, 204, 0.35);
+    transition: transform .12s ease, box-shadow .15s ease, filter .15s ease;
+    margin-left: auto;
+    position: relative;
+    top: -2px;
+  }
+  .composer .input .send-btn:hover{
+    filter: brightness(1.08);
+    box-shadow: 0 16px 32px rgba(0, 122, 204, 0.4);
+  }
+  .composer .input .send-btn:active{
+    transform: scale(0.94);
+  }
+  .ekchat-root[data-theme="dark"] .composer .input .send-btn{
+    background: linear-gradient(140deg, var(--accent-600) 0%, var(--accent) 100%);
+    color: #0b0f14;
+    box-shadow: 0 12px 26px rgba(0,0,0,0.4);
+  }
+  .ekchat-root[data-theme="dark"] .composer .input .send-btn:hover{
+    filter: brightness(1.05);
+    box-shadow: 0 18px 32px rgba(0,0,0,0.45);
+  }
+  .composer .input .send-btn:disabled{
+    opacity: 0.4;
+    cursor: default;
+    transform: none;
+    pointer-events: none;
+  }
+  .mention-chip{
+    position: relative;
+    display:inline;
+    white-space: nowrap;
+    font-weight: inherit;
+    color: inherit;
+    z-index: 0;
+    transition: color .18s ease;
+  }
+  .mention-chip::before{
+    content: '';
+    position: absolute;
+    inset: -3px -2px -3px -4px;
+    border-radius: 9px;
+    background: transparent;
+    border: 1px solid transparent;
+    box-shadow: none;
+    transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+    z-index: -1;
+  }
+  .mention-chip.complete{
+    color: #e96072;
+  }
+  .mention-chip.complete::before{
+    background: #ffedd5;
+    border-color: #ffa94d;
+    box-shadow: 0 4px 12px rgba(255, 163, 92, 0.32);
+  }
+  .mention-chip.matched{
+    color: #e05067;
+  }
+  .mention-chip.matched.complete{
+    color: #d63b52;
+  }
+  .mention-chip.matched.complete::before{
+    background: #ffe0bb;
+    border-color: #ff9d62;
+    box-shadow: 0 6px 18px rgba(255, 149, 83, 0.38);
+  }
+  .ekchat-root[data-theme="dark"] .mention-chip.complete{
+    color: #ff9bad;
+  }
+  .ekchat-root[data-theme="dark"] .mention-chip.complete::before{
+    background: rgba(255, 180, 102, 0.32);
+    border-color: rgba(255, 189, 125, 0.65);
+    box-shadow: 0 8px 18px rgba(255, 138, 76, 0.32);
+  }
+  .ekchat-root[data-theme="dark"] .mention-chip.matched{
+    color: #ffb0bf;
+  }
+  .ekchat-root[data-theme="dark"] .mention-chip.matched.complete::before{
+    background: rgba(255, 180, 102, 0.46);
+    border-color: rgba(255, 173, 92, 0.75);
+    box-shadow: 0 10px 22px rgba(255, 126, 65, 0.4);
+  }
+  .composer.web-mode textarea::placeholder{ color: color-mix(in oklab, var(--accent-600) 50%, var(--muted) 50%); }
+  .ekchat-root[data-theme="dark"] .composer.web-mode textarea::placeholder{
+    color: color-mix(in oklab, var(--accent) 55%, var(--muted) 45%);
+  }
+  .mention{ background: #e0f2fe; color: #0369a1; border-radius: 6px; padding: 0 4px; font-weight: 600; }
+  .send-btn{
+    height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent;
+    background: #111827; color: #fff; font-weight: 600; cursor:pointer;
+    display:flex; align-items:center; gap:8px;
+  }
+  .ekchat-root[data-theme="dark"] .send-btn{
+    background: color-mix(in oklab, var(--panel) 85%, var(--bg) 15%);
+  }
+  .send-btn:hover{ filter: brightness(1.08); }
+  
+  /* ===== Right mini-sidebar (files) ===== */
+  /* Reserve space using flex-basis on the wrapper (fixes cropping) */
+  .rightbar-wrap{
+    position: relative;
+    flex: 0 0 0;           /* fully collapsed by default */
+    width: 0;              /* no visible width */
+    border-left: none;     /* no divider when closed */
+    background: var(--rightbar);
+    transition: width .18s ease, flex-basis .18s ease;
+    overflow: hidden;      /* prevent any text bleed-through */
+  }
+  .rightbar-wrap.open{
+    flex-basis: 320px;
+    width: 320px;
+    border-left: 1px solid var(--border); /* show divider only when open */
+  }
+  .rightbar{
+    position: absolute; inset: 0;
+    overflow: hidden; background: var(--rightbar);
+    display:flex;
+    flex-direction:column;
+    height:100%;
+  }
+  .rightbar-head{ display:flex; align-items:center; justify-content: space-between; padding: 10px; border-bottom:1px solid var(--border); }
+  .rightbar-title{ font-weight:700; color: var(--muted); }
+  .rightbar-body{
+    padding: 10px;
+    flex: 1;
+    min-height: 0;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .file-stack{
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .file-list{ flex:1; min-height:0; overflow:auto; background: var(--panel); border:1px solid var(--border); border-radius:10px; padding: 6px; }
+  .file-item{ padding: 8px 10px; border-radius: 8px; display:flex; align-items:center; gap: 8px; cursor:pointer; color: var(--text); }
+  .file-item:hover{ background: color-mix(in oklab, var(--panel) 80%, var(--accent) 20%); }
+  .drop-zone{
+    position: relative;
+    border: 2px dashed var(--border); border-radius: 12px; padding: 14px; background: var(--panel);
+    text-align: center; color: var(--muted);
+  }
+  .drop-zone.drag{ border-color: var(--accent); background: var(--accent-50); color: var(--accent-600); }
+
+  /* Utilities */
+  .hidden{ display:none; }.ekchat-root{
+    /* VS Code Light-ish */
+    --bg: #f6f7fb;
+    --panel: #ffffff;
+    --sidebar: #f7f9fc;
+    --rightbar: #f7f9fc;
+  
+    --text: #0f172a;
+    --muted: #4b5563;
+    --border: #e5e7eb;
+  
+    /* VS Code blue */
+    --accent: #007acc;
+    --accent-600: #0e639c;
+    --accent-50: #e6f2ff;
+  
+    --danger: #ef4444;
+    --danger-50: #fef2f2;
+  
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 18px rgba(0,0,0,.06);
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 18px;
+    --chip: #eef2ff;
+  }
+  
+  /* ------ VS Code Dark ------ */
+  .ekchat-root[data-theme="dark"]{
+    --bg: #131415;
+    --panel: #17181a;
+    --sidebar: #1b1d1f;
+    --rightbar: #1b1d1f;
+  
+    --text: #e8eaed;
+    --muted: #9aa0a6;
+    --border: #2b2f33;
+  
+    --accent: #8ab4f8;
+    --accent-600: #6f9ff6;
+    --accent-50: rgba(138,180,248,0.14);
+  
+    --danger: #ea4335;
+    --danger-50: rgba(234,67,53,0.16);
+  
+    --shadow: 0 8px 24px rgba(0,0,0,0.28), 0 20px 50px rgba(0,0,0,0.35);
+    --chip: rgba(255,255,255,0.06);
+  }
+  
+  * { box-sizing: border-box; }
+  .ekchat-root { height: 100%; }.ekchat-root { 
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+    color: var(--text);
+    background: var(--bg);
+  }
+  
+  /* ===== App shell ===== */
+  .app-shell {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+  }
+  
+  /* Top bar */
+  .topbar {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+    position: sticky; top: 0; z-index: 5;
+  }
+  .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .2px; }
+  .brand .botmark {
+    width: 28px; height: 28px; border-radius: 9px;
+    background: linear-gradient(155deg, var(--accent) 0%, var(--accent-600) 90%);
+    box-shadow: 0 4px 14px color-mix(in oklab, var(--accent) 28%, transparent);
+  }
+  .topbar .actions { display: flex; align-items: center; gap: 8px; }
+  
+  /* Icon & primary buttons */
+  .icon-btn{
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    background: var(--panel); cursor: pointer;
+    transition: transform .05s ease, background .15s ease, border-color .15s ease;
+    color: var(--text);
+  }
+  .icon-btn:hover{ background: color-mix(in oklab, var(--panel) 92%, var(--accent) 8%); }
+  .icon-btn:active{ transform: translateY(1px); }
+  
+  .btn-primary{
+    height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid transparent;
+    background: var(--accent); color: #fff; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items:center; gap: 8px;
+    box-shadow: 0 10px 20px color-mix(in oklab, var(--accent) 20%, transparent);
+  }
+  .btn-primary:hover{ background: var(--accent-600); }
+  
+  /* ===== Left rail ===== */
+  .sidebar{
+    grid-row: 2; grid-column: 1;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+    width: 280px;
+    transition: width .18s ease;
+    overflow: hidden;
+  }
+  .sidebar.collapsed { width: 64px; }
+  .sidebar.collapsed:hover { width: 280px; } /* hover-to-expand */
+  
+  .sidebar-inner{ height: 100%; display:flex; flex-direction:column; }
+  .sidebar-head{ padding: 12px; display:flex; gap: 8px; align-items:center; justify-content: space-between; }
+  .sidebar-title{ font-weight: 700; color: var(--muted); letter-spacing:.3px; }
+  
+  /* Chat items */
+  .chat-list{ padding: 8px 10px 16px; overflow: auto; flex: 1; }
+  .chat-item{
+    display:flex; align-items:center; gap: 10px;
+    padding: 8px 10px; border-radius: 10px; cursor:pointer;
+    color: var(--text);
+  }
+  .chat-item:hover{ background: var(--panel); box-shadow: var(--shadow); }
+  .chat-item.active{ background: var(--panel); border: 1px solid var(--accent); }
+  .sidebar .chat-item .label{ display:block; flex:1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar .chat-item .badge{ font-size: 11px; color: var(--muted); background: var(--chip); padding: 2px 6px; border-radius: 999px; }
+  .chat-item .close{ opacity: 0; transition: opacity .15s ease; color: var(--muted); }
+  .chat-item:hover .close{ opacity: 1; }
+  
+  /* Collapsed behavior */
+  .sidebar.collapsed .sidebar-title{ opacity: 0; width:0; }
+  .sidebar.collapsed .chat-item .label,
+  .sidebar.collapsed .chat-item .badge{ display:none; }
+  /* Reveal on hover-open */
+  .sidebar.collapsed:hover .sidebar-title{ opacity:1; width:auto; }
+  .sidebar.collapsed:hover .chat-item .label,
+  .sidebar.collapsed:hover .chat-item .badge{ display:block; }
+  
+  .md p { margin: 0.4rem 0; }
+  .md strong, .md b { font-weight: 700; }
+  .md em, .md i { font-style: italic; }
+  .md ul, .md ol { padding-left: 1.25rem; margin: 0.5rem 0; }
+  .md li + li { margin-top: 0.25rem; }
+  .md h1, .md h2, .md h3, .md h4 { margin: .6rem 0 .3rem; font-weight: 700; }
+  .md h1 { font-size: 1.5rem; } .md h2 { font-size: 1.3rem; } .md h3 { font-size: 1.15rem; }
+  .md code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: .92em; }
+  .md pre { overflow-x: auto; padding: 12px; background: color-mix(in oklab, var(--panel) 80%, #000 20%); border: 1px solid var(--border); border-radius: 8px; }
+  .md a{
+    color: var(--accent-600);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color .15s ease;
+  }
+  .md a:hover{ color: color-mix(in oklab, var(--accent-600) 70%, var(--accent) 30%); }
+  .ekchat-root[data-theme="dark"] .md a{ color: var(--accent); }
+  .ekchat-root[data-theme="dark"] .md a:hover{ color: color-mix(in oklab, var(--accent) 80%, #ffffff 20%); }
+  .md img { max-width: 100%; height: auto; display: block; margin: 8px 0; border: 1px solid var(--border); border-radius: 8px; }
+  .md .md-table-wrap { overflow-x: auto; margin: .6rem 0; }
+  .md table { width: 100%; border-collapse: collapse; margin: .6rem 0; }
+  .md th, .md td { border: 1px solid var(--border); padding: 8px 10px; vertical-align: top; }
+  .md th { background: color-mix(in oklab, var(--panel) 92%, var(--text) 8%); text-align: left; }
+  /* ===== Right mini-sidebar (files) ===== */
+  /* Reserve space using flex-basis on the wrapper (fixes cropping) */
+  .rightbar-wrap{
+    position: relative;
+    flex: 0 0 0;           /* fully collapsed by default */
+    width: 0;              /* no visible width */
+    border-left: none;     /* no divider when closed */
+    background: var(--rightbar);
+    transition: width .18s ease, flex-basis .18s ease;
+    overflow: hidden;      /* prevent any text bleed-through */
+  }
+  .rightbar-wrap.open{
+    flex-basis: 320px;
+    width: 320px;
+    border-left: 1px solid var(--border); /* show divider only when open */
+  }
+  .rightbar{
+    position: absolute; inset: 0;
+    overflow: hidden; background: var(--rightbar);
+  }
+  .rightbar-head{ display:flex; align-items:center; justify-content: space-between; padding: 10px; border-bottom:1px solid var(--border); }
+  .rightbar-title{ font-weight:700; color: var(--muted); }
+  .rightbar-body{ padding: 10px; display:flex; flex-direction:column; gap:10px; height: calc(100% - 56px); }
+  .file-list{ flex:1; overflow:auto; background: var(--panel); border:1px solid var(--border); border-radius:10px; padding: 6px; }
+  .file-item{ padding: 8px 10px; border-radius: 8px; display:flex; align-items:center; gap: 8px; cursor:pointer; color: var(--text); }
+  .file-item:hover{ background: color-mix(in oklab, var(--panel) 80%, var(--accent) 20%); }
+  .drop-zone{
+    position: relative;
+    border: 2px dashed var(--border); border-radius: 12px; padding: 14px; background: var(--panel);
+    text-align: center; color: var(--muted);
+  }
+  .drop-zone.drag{ border-color: var(--accent); background: var(--accent-50); color: var(--accent-600); }
+  
+  /* Utilities */
+  .hidden{ display:none; }
+
+/* ===== Modern dark theme overrides ===== */
+.ekchat-root[data-theme="dark"]{
+  --bg: #131415;
+  --panel: #17181a;
+  --sidebar: #1b1d1f;
+  --rightbar: #1b1d1f;
+
+  --text: #e8eaed;
+  --muted: #9aa0a6;
+  --border: #2b2f33;
+
+  --accent: #8ab4f8;
+  --accent-600: #6f9ff6;
+  --accent-50: rgba(138,180,248,0.14);
+
+  --danger: #ea4335;
+  --danger-50: rgba(234,67,53,0.16);
+
+  --shadow: 0 8px 24px rgba(0,0,0,0.28), 0 20px 50px rgba(0,0,0,0.35);
+  --chip: rgba(255,255,255,0.06);
+
+  --composer-bg: #1c1e20;
+  --composer-border: #2b2f33;
+}
+
+.ekchat-root[data-theme="dark"] .brand .botmark{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+}
+
+.ekchat-root[data-theme="dark"] .btn-primary{
+  background: color-mix(in oklab, var(--accent) 28%, var(--panel) 72%);
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--border) 60%);
+  color: var(--text);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.28);
+  letter-spacing: 0.02em;
+}
+.ekchat-root[data-theme="dark"] .btn-primary:hover{
+  background: color-mix(in oklab, var(--accent) 36%, var(--panel) 64%);
+  color: var(--text);
+}
+
+.ekchat-root[data-theme="dark"] .message.user .message-body{
+  background: color-mix(in oklab, var(--panel) 82%, var(--accent-50) 18%);
+  border-color: color-mix(in oklab, var(--accent) 30%, var(--border) 70%);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.32);
+}
+.ekchat-root[data-theme="dark"] .message.user .avatar{
+  background: color-mix(in oklab, var(--panel) 88%, var(--accent-50) 12%);
+  border-color: color-mix(in oklab, var(--border) 70%, var(--accent) 30%);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+}
+
+/* ===== Generate panel ===== */
+.sidebar-nav{
+  display:flex;
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+.sidebar-head-spacer{
+  width: 72px;
+  height: 36px;
+}
+.sidebar.collapsed .sidebar-head-spacer{
+  width: 0;
+}
+.sidebar-nav-btn{
+  flex: 1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, color .15s ease, transform .1s ease;
+}
+.sidebar-nav-btn:hover{
+  background: color-mix(in oklab, var(--panel) 92%, var(--accent) 8%);
+  color: var(--text);
+}
+.sidebar-nav-btn.active{
+  background: var(--accent-50);
+  border-color: color-mix(in oklab, var(--accent) 45%, var(--border) 55%);
+  color: var(--accent-600);
+  box-shadow: 0 6px 18px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.sidebar.collapsed .sidebar-nav-btn span{ display:none; }
+.sidebar.collapsed .sidebar-nav-btn{ justify-content:center; }
+.sidebar.collapsed:hover .sidebar-nav-btn span{ display:inline; }
+.sidebar.collapsed:hover .sidebar-nav-btn{ justify-content:flex-start; }
+
+.sidebar-subnav{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+.sidebar-subnav-group{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
+.sidebar-subnav-btn{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, color .15s ease, transform .1s ease;
+}
+.sidebar-subnav-btn:hover{
+  background: color-mix(in oklab, var(--panel) 92%, var(--accent) 8%);
+  color: var(--text);
+}
+.sidebar-subnav-btn.active{
+  background: var(--accent-50);
+  border-color: color-mix(in oklab, var(--accent) 45%, var(--border) 55%);
+  color: var(--accent-600);
+  box-shadow: 0 6px 18px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.sidebar-subnav-sub-btn{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  margin-left: 22px;
+  padding: 6px 10px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, color .15s ease, transform .1s ease;
+}
+.sidebar-subnav-sub-btn:hover{
+  background: color-mix(in oklab, var(--panel) 92%, var(--accent) 8%);
+  color: var(--text);
+}
+.sidebar-subnav-sub-btn.active{
+  background: var(--accent-50);
+  border-color: color-mix(in oklab, var(--accent) 45%, var(--border) 55%);
+  color: var(--accent-600);
+  box-shadow: 0 6px 18px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.sidebar.collapsed .sidebar-subnav-btn span{ display:none; }
+.sidebar.collapsed .sidebar-subnav-btn{ justify-content:center; }
+.sidebar.collapsed:hover .sidebar-subnav-btn span{ display:inline; }
+.sidebar.collapsed:hover .sidebar-subnav-btn{ justify-content:flex-start; }
+.sidebar.collapsed .sidebar-subnav-sub-btn span{ display:none; }
+.sidebar.collapsed .sidebar-subnav-sub-btn{ justify-content:center; margin-left: 0; }
+.sidebar.collapsed:hover .sidebar-subnav-sub-btn span{ display:inline; }
+.sidebar.collapsed:hover .sidebar-subnav-sub-btn{ justify-content:flex-start; margin-left: 22px; }
+
+.btn-secondary{
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items:center;
+  gap: 8px;
+  transition: background .15s ease, border-color .15s ease, transform .05s ease;
+}
+.btn-secondary:hover{
+  background: color-mix(in oklab, var(--panel) 90%, var(--accent) 10%);
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--border) 65%);
+}
+.btn-secondary:disabled{
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.generate-panel{
+  flex: 1;
+  display:flex;
+  flex-direction:column;
+  height: 100%;
+}
+.generate-header{
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.generate-title{
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.generate-subtitle{
+  color: var(--muted);
+  font-size: 0.86rem;
+  margin-top: 4px;
+}
+.generate-model{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap: 6px;
+}
+.generate-model-label{
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.generate-header .model-picker{
+  position: relative;
+  display:flex;
+  align-items:center;
+  height: 34px;
+  min-width: 180px;
+  justify-content:flex-start;
+}
+.generate-header .model-display{
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: color-mix(in oklab, var(--muted) 65%, var(--text) 35%);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display:flex;
+  align-items:center;
+  gap: 6px;
+  cursor: pointer;
+  transition: color .15s ease, border-color .15s ease, background .15s ease;
+}
+.generate-header .model-display:hover,
+.generate-header .model-picker.open .model-display{
+  color: color-mix(in oklab, var(--accent-600) 55%, var(--text) 45%);
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--border) 65%);
+  background: color-mix(in oklab, var(--panel) 90%, var(--accent-50) 10%);
+}
+.generate-header .model-menu{
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 220px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: 6px;
+  display:flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 30;
+}
+.generate-header .model-option{
+  border: none;
+  background: none;
+  color: var(--text);
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.generate-header .model-option:hover{
+  background: color-mix(in oklab, var(--accent-50) 45%, var(--panel) 55%);
+}
+.generate-header .model-option.selected{
+  background: color-mix(in oklab, var(--accent-50) 60%, var(--panel) 40%);
+  color: color-mix(in oklab, var(--accent-600) 65%, var(--text) 35%);
+}
+@media (max-width: 720px){
+  .generate-header{
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .generate-model{
+    align-items:flex-start;
+    width: 100%;
+  }
+  .generate-header .model-picker,
+  .generate-header .model-display{
+    width: 100%;
+  }
+  .generate-header .model-display{
+    justify-content: space-between;
+  }
+}
+.generate-body{
+  padding: 18px 20px 24px;
+  overflow: auto;
+  display:flex;
+  flex-direction:column;
+  gap: 16px;
+}
+.generate-body.doc-chat-body{
+  padding: 0;
+  overflow: hidden;
+  flex: 1;
+}
+.generate-body.doc-chat-body .generate-grid{
+  flex: 1;
+  height: 100%;
+}
+.doc-chat-shell{
+  flex: 1;
+  min-height: 0;
+  display:flex;
+  flex-direction:column;
+  grid-column: 1 / -1;
+}
+.doc-chat-shell .chat-window{
+  flex: 1;
+  min-height: 0;
+}
+.doc-chat-empty{
+  padding: 24px;
+  color: var(--muted);
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+}
+.generate-tabs{
+  display:inline-flex;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  width: fit-content;
+}
+.generate-tab{
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.generate-tab.active{
+  background: var(--accent-50);
+  color: var(--accent-600);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 35%, var(--border) 65%);
+}
+.generate-grid{
+  display:grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+@media (min-width: 1024px){
+  .generate-grid{
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+.generate-card{
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 16px;
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+  box-shadow: var(--shadow);
+}
+.generate-card.span-2{
+  grid-column: 1 / -1;
+}
+.generate-card-title{
+  font-weight: 700;
+}
+.generate-card-desc{
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.generate-actions{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items:center;
+}
+.generate-status{
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+.generate-file-list{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+  max-height: 200px;
+  overflow:auto;
+  padding-right: 6px;
+}
+.library-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.library-grid-scroll{
+  flex: 1;
+  min-height: 240px;
+  overflow: auto;
+  padding-right: 6px;
+}
+.library-card-large{
+  min-height: clamp(420px, 60vh, 720px);
+}
+.library-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.library-header-main{
+  display:flex;
+  flex-direction:column;
+  gap: 4px;
+  min-width: 0;
+}
+.library-header-actions{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.library-sort{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.library-sort-label{
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.library-sort-select{
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.library-upload-btn{
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+.library-actions{
+  position: relative;
+  display:flex;
+  align-items:center;
+}
+.library-actions-btn{
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.library-actions-btn.is-enabled{
+  color: var(--text);
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--border) 60%);
+  background: color-mix(in oklab, var(--panel) 85%, var(--accent-50) 15%);
+}
+.library-actions-btn:disabled{
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.library-actions-menu{
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 220px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 6px;
+  display:flex;
+  flex-direction:column;
+  gap: 4px;
+  z-index: 20;
+}
+.library-action-item{
+  border: none;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.library-action-item:hover{
+  background: color-mix(in oklab, var(--accent-50) 50%, var(--panel) 50%);
+}
+.library-action-item:disabled{
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.library-card{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--panel) 92%, var(--accent-50) 8%);
+  padding: 10px 10px 6px;
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+}
+.library-card.is-selectable{
+  cursor: pointer;
+}
+.library-card.is-selected{
+  border-color: color-mix(in oklab, var(--accent) 55%, var(--border) 45%);
+  box-shadow: none;
+  outline: 2px solid color-mix(in oklab, var(--accent) 55%, var(--border) 45%);
+  outline-offset: -2px;
+  background: color-mix(in oklab, var(--panel) 90%, var(--accent-50) 10%);
+}
+.library-card.is-disabled{
+  opacity: 0.7;
+}
+.library-card.is-disabled.is-selected{
+  opacity: 1;
+}
+.library-thumb{
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  height: 220px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+}
+.library-thumb:disabled{
+  cursor: not-allowed;
+}
+.library-thumb-preview{
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.library-thumb-fallback{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.library-card-footer{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.library-card-actions{
+  display:flex;
+  align-items:center;
+  gap: 6px;
+}
+.draft-card-action{
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+.library-card-name{
+  font-size: 0.82rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.library-footer{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items:center;
+  justify-content: space-between;
+}
+.library-footer-actions{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+.library-preview-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 12, 18, 0.6);
+  backdrop-filter: blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 20px;
+  z-index: 50;
+}
+.library-preview{
+  width: min(980px, 92vw);
+  height: min(80vh, 820px);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  display:flex;
+  flex-direction:column;
+  overflow: hidden;
+}
+.library-preview-head{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in oklab, var(--panel) 90%, var(--accent-50) 10%);
+}
+.library-preview-title{
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.library-preview-body{
+  flex: 1;
+  background: #fff;
+}
+.library-preview-frame{
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+.library-preview-fallback{
+  padding: 18px;
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+  color: var(--muted);
+}
+@media (max-width: 720px){
+  .library-header{
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .library-header-actions{
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .library-sort{
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .library-actions{
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+.generate-file-item{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 9px;
+  background: color-mix(in oklab, var(--panel) 85%, var(--accent-50) 15%);
+  color: var(--text);
+}
+.generate-file-item span{
+  overflow:hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.generate-file-chip{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip);
+  font-size: 0.86rem;
+  color: var(--text);
+  width: fit-content;
+}
+.generate-toggle{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+.generate-input{
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  outline: none;
+}
+.generate-input::placeholder{
+  color: var(--muted);
+  font-weight: 500;
+}
+.draft-save{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items:center;
+}
+.draft-list{
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+  max-height: 260px;
+  overflow:auto;
+  padding-right: 6px;
+}
+.draft-item{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--panel) 90%, var(--accent-50) 10%);
+  padding: 12px;
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+}
+.draft-item.selected{
+  border-color: color-mix(in oklab, var(--accent) 45%, var(--border) 55%);
+  box-shadow: 0 8px 20px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+.draft-item-main{
+  display:flex;
+  flex-direction:column;
+  gap: 4px;
+}
+.draft-preview-meta{
+  display:flex;
+  flex-direction:column;
+  gap: 4px;
+}
+.draft-item-name{
+  font-weight: 700;
+}
+.draft-item-meta{
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.draft-actions{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.draft-action-btn{
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 9px;
+  font-size: 0.82rem;
+}
+.generate-output{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--panel) 92%, var(--accent-50) 8%);
+  padding: 12px;
+  max-height: 360px;
+  overflow:auto;
+}
+.generate-output-large{
+  min-height: 360px;
+  max-height: 70vh;
+}
+.generate-muted{
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+.generate-meta{
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.generate-toolbar{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items:center;
+  justify-content: space-between;
+}
+.generate-mode{
+  display:inline-flex;
+  gap: 6px;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+.generate-mode-btn{
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.generate-mode-btn.active{
+  background: var(--accent-50);
+  color: var(--accent-600);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 35%, var(--border) 65%);
+}
+.generate-downloads{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.generate-editor{
+  width: 100%;
+  min-height: 0;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+}
+.generate-editor::placeholder{
+  color: var(--muted);
+}
+
+/* ===== Rich text editor ===== */
+.rte{
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+}
+.rte-toolbar{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items:center;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+.rte-select{
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--panel) 92%, var(--accent-50) 8%);
+  color: var(--text);
+  padding: 0 10px;
+  font-weight: 600;
+  outline: none;
+}
+.rte-divider{
+  width: 1px;
+  height: 26px;
+  background: var(--border);
+  margin: 0 2px;
+}
+.rte-buttons{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items:center;
+}
+.rte-btn{
+  height: 34px;
+  width: 34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--panel) 92%, var(--accent-50) 8%);
+  color: var(--text);
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, transform .05s ease;
+}
+.rte-btn:hover{
+  background: color-mix(in oklab, var(--panel) 88%, var(--accent) 12%);
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--border) 65%);
+}
+.rte-btn:active{
+  transform: translateY(1px);
+}
+.rte-editor{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--panel) 92%, var(--accent-50) 8%);
+  padding: 12px;
+  min-height: 360px;
+  overflow: auto;
+  outline: none;
+  color: var(--text);
+}
+.rte-editor:empty:before{
+  content: attr(data-placeholder);
+  color: var(--muted);
+}
+.section-list{
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+}
+.section-card{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  background: color-mix(in oklab, var(--panel) 90%, var(--accent-50) 10%);
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+}
+.section-card-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 10px;
+}
+.section-card-title{
+  font-weight: 700;
+}
+.section-card-meta{
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+.section-card-actions{
+  display:flex;
+  gap: 8px;
+}
+.section-card-context{
+  display:grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+@media (min-width: 900px){
+  .section-card-context{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.section-context-label{
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.section-snippet{
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--panel) 88%, var(--accent-50) 12%);
+  padding: 10px;
+  font-size: 0.92rem;
+  color: var(--text);
+  max-height: 160px;
+  overflow:auto;
+  white-space: pre-wrap;
+}
+.section-editor{
+  width: 100%;
+  min-height: 140px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+.section-editor::placeholder{
+  color: var(--muted);
+}
+
+.cap-matrix-card{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cap-matrix-header{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cap-matrix-title{
+  font-weight: 700;
+  font-size: 1.02rem;
+}
+.cap-matrix-subtitle{
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+.cap-matrix-meta{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.cap-matrix-right{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.cap-matrix-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.cap-matrix-meta span{
+  background: var(--chip);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.cap-matrix-status{
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.cap-matrix-table-wrap{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow-x: auto;
+  background: var(--panel);
+}
+.cap-matrix-table{
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  min-width: 1500px;
+}
+.cap-matrix-table th,
+.cap-matrix-table td{
+  border-bottom: 1px solid var(--border);
+  padding: 10px;
+  vertical-align: top;
+}
+.cap-matrix-table th{
+  text-align: left;
+  font-weight: 600;
+  background: color-mix(in oklab, var(--panel) 92%, var(--accent-50) 8%);
+}
+.cap-matrix-table tr:last-child td{
+  border-bottom: none;
+}
+.cap-matrix-row-section td{
+  background: color-mix(in oklab, var(--panel) 96%, var(--accent-50) 4%);
+}
+.cap-matrix-heading{
+  display: inline-block;
+  max-width: 100%;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in oklab, var(--accent) 22%, var(--border) 78%);
+  background: color-mix(in oklab, var(--panel) 82%, var(--accent-50) 18%);
+  font-weight: 600;
+  white-space: pre-wrap;
+}
+.cap-matrix-heading.level-2{
+  background: color-mix(in oklab, var(--panel) 88%, var(--accent-50) 12%);
+}
+.cap-matrix-heading.level-3{
+  background: color-mix(in oklab, var(--panel) 92%, var(--accent-50) 8%);
+}
+.cap-matrix-heading.level-4,
+.cap-matrix-heading.level-5,
+.cap-matrix-heading.level-6{
+  background: color-mix(in oklab, var(--panel) 95%, var(--accent-50) 5%);
+}
+.cap-matrix-coverage{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+.cap-matrix-coverage-score{
+  font-size: 1rem;
+}
+.cap-matrix-coverage-label{
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+.cap-matrix-coverage.score-3{
+  color: #15803d;
+}
+.cap-matrix-coverage.score-2{
+  color: #a16207;
+}
+.cap-matrix-coverage.score-1{
+  color: #b45309;
+}
+.cap-matrix-coverage.score-0{
+  color: #b91c1c;
+}
+.cap-matrix-coverage.cap-matrix-section{
+  color: var(--muted);
+  font-weight: 600;
+}
+.cap-matrix-ref-list{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cap-matrix-ref-chip{
+  border: 1px solid var(--border);
+  background: var(--chip);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  color: var(--text);
+}
+.cap-matrix-ref-chip:hover{
+  background: color-mix(in oklab, var(--chip) 70%, var(--accent-50) 30%);
+}
+.cap-matrix-empty{
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.cap-matrix-pre{
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.shred-doc-card{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.shred-doc-header{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.shred-doc-title{
+  font-weight: 700;
+  font-size: 1.02rem;
+}
+.shred-doc-subtitle{
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+.shred-doc-meta{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.shred-doc-right{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.shred-doc-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.shred-doc-meta span{
+  background: var(--chip);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.shred-doc-table-wrap{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow-x: auto;
+  background: var(--panel);
+}
+.shred-doc-table{
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  min-width: 680px;
+}
+.shred-doc-table th,
+.shred-doc-table td{
+  border-bottom: 1px solid var(--border);
+  padding: 10px;
+  vertical-align: top;
+}
+.shred-doc-table th{
+  text-align: left;
+  font-weight: 600;
+  background: color-mix(in oklab, var(--panel) 92%, var(--accent-50) 8%);
+}
+.shred-doc-table tr:last-child td{
+  border-bottom: none;
+}
+.shred-doc-section{
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+.shred-doc-summary{
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+.shred-doc-summary mark{
+  background: color-mix(in oklab, var(--accent-50) 70%, #ffffff 30%);
+  color: var(--text);
+  padding: 0 2px;
+}
+.shred-doc-empty{
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.reference-modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 40;
+}
+.reference-modal{
+  width: min(1100px, 92vw);
+  max-height: 86vh;
+  background: var(--panel);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.reference-modal-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.reference-modal-title{
+  font-weight: 700;
+  font-size: 1.02rem;
+}
+.reference-modal-meta{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 16px;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+.reference-modal-meta span{
+  font-weight: 600;
+  color: var(--text);
+  margin-right: 4px;
+}
+.reference-modal-evidence{
+  padding: 0 16px 12px;
+}
+.reference-modal-label{
+  font-weight: 600;
+  font-size: 0.84rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.reference-modal-snippet{
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px;
+  background: color-mix(in oklab, var(--panel) 88%, var(--accent-50) 12%);
+  font-size: 0.86rem;
+}
+.reference-modal-status{
+  padding: 0 16px 12px;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+.reference-modal-body{
+  padding: 0 16px 16px;
+  overflow: auto;
+}
+.reference-modal-frame{
+  width: 100%;
+  height: 60vh;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #ffffff;
+}
+.reference-modal-text{
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  max-height: 60vh;
+  overflow: auto;
+  background: color-mix(in oklab, var(--panel) 94%, var(--accent-50) 6%);
+}
+.reference-modal-text mark{
+  background: color-mix(in oklab, var(--accent-50) 70%, #ffffff 30%);
+  color: var(--text);
+  padding: 0 2px;
+}
+.reference-modal-fallback{
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+/* PipelinePro integration overrides (avoid using viewport height inside the embedded route). */
+.ekchat-root .app-shell{
+  height: 100%;
+}
+.ekchat-root .main{
+  height: calc(100% - 56px);
+}
+
+/* Native Ekchat without internal sidebar. */
+.ekchat-root .app-shell.no-sidebar{
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+.ekchat-root .app-shell.no-sidebar .topbar{
+  display: none;
+}
+.ekchat-root .app-shell.no-sidebar .main{
+  grid-column: 1;
+  grid-row: 1;
+  height: 100% !important;
+  min-height: 0;
+}
+.ekchat-root .topbar-controls{
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 12px;
+}
+.ekchat-root .topbar-mode-controls{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ekchat-root .topbar-chat-controls,
+.ekchat-root .topbar-generate-controls{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.ekchat-root .topbar-select{
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  padding: 0 10px;
+  font-size: 0.9rem;
+}
+.ekchat-root .topbar-chat-select{
+  min-width: 220px;
+  max-width: 380px;
+}
+.ekchat-root .topbar-sub-select{
+  min-width: 220px;
+}
+
+@media (max-width: 980px){
+  .ekchat-root .topbar{
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ekchat-root .topbar-controls{
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0;
+    overflow-x: auto;
+  }
+  .ekchat-root .topbar-chat-select{
+    min-width: 180px;
+  }
+  .ekchat-root .topbar-sub-select{
+    min-width: 180px;
+  }
+}
+
+/* Shared PipelinePro theme palette for Ekchat surfaces. */
+.ekchat-root{
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --sidebar: #f1f5f9;
+  --rightbar: #f1f5f9;
+  --text: #0f172a;
+  --muted: #475569;
+  --border: #e2e8f0;
+  --accent: #6366f1;
+  --accent-600: #4f46e5;
+  --accent-50: rgba(99, 102, 241, 0.14);
+  --danger: #dc2626;
+  --danger-50: rgba(220, 38, 38, 0.12);
+}
+.ekchat-root[data-theme="dark"]{
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --sidebar: #1e293b;
+  --rightbar: #1e293b;
+  --text: #f1f5f9;
+  --muted: #cbd5e1;
+  --border: rgba(148, 163, 184, 0.28);
+  --accent: #6366f1;
+  --accent-600: #818cf8;
+  --accent-50: rgba(99, 102, 241, 0.22);
+  --danger: #ef4444;
+  --danger-50: rgba(239, 68, 68, 0.16);
+}
+
+/* Keep composer pinned; only message list scrolls in embedded PipelinePro route. */
+.ekchat-root{
+  height: 100%;
+  min-height: 0;
+}
+.ekchat-root .app-shell{
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+.ekchat-root .main{
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+.ekchat-root .chat-window{
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+.ekchat-root .messages{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: clamp(168px, 21vh, 260px);
+}
+.ekchat-root .messages-inner{
+  min-height: min-content;
+}
+.ekchat-root .composer-shell{
+  flex: 0 0 auto;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  z-index: 2;
+  pointer-events: none;
+  background: transparent;
+}
+.ekchat-root .composer{
+  pointer-events: auto;
+}
+
+@media (max-width: 900px){
+  .ekchat-root .messages{
+    padding-bottom: clamp(156px, 24vh, 240px);
+  }
+  .ekchat-root .composer-shell{
+    bottom: max(8px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ===== UX upgrade overrides ===== */
+.ekchat-root{
+  --content-max: 1120px;
+}
+.ekchat-root .brand{
+  min-width: 0;
+}
+.ekchat-root .brand-copy{
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ekchat-root .ekchat-breadcrumb{
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: color-mix(in oklab, var(--muted) 78%, var(--text) 22%);
+  max-width: min(64vw, 760px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ekchat-root .messages{
+  padding-top: 14px;
+  padding-bottom: clamp(104px, 12vh, 156px);
+}
+.ekchat-root .messages-inner{
+  max-width: 1040px;
+  padding: 0 clamp(14px, 2.1vw, 28px);
+}
+.ekchat-root .message{
+  margin: 14px 0;
+}
+.ekchat-root .message .message-body{
+  max-width: min(980px, 100%);
+}
+.ekchat-root .message.assistant .message-body{
+  background: color-mix(in oklab, var(--panel) 90%, var(--accent-50) 10%);
+  border: 1px solid color-mix(in oklab, var(--border) 85%, var(--accent) 15%);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+.ekchat-root[data-theme="dark"] .message.assistant .message-body{
+  background: color-mix(in oklab, var(--panel) 90%, var(--bg) 10%);
+  border-color: color-mix(in oklab, var(--border) 70%, var(--accent) 30%);
+  box-shadow: 0 16px 36px rgba(2, 6, 23, 0.52);
+}
+.ekchat-root .md{
+  line-height: 1.72;
+}
+.ekchat-root .md p{
+  margin: 0.72rem 0;
+}
+.ekchat-root .md h1,
+.ekchat-root .md h2,
+.ekchat-root .md h3,
+.ekchat-root .md h4{
+  margin-top: 1.08rem;
+  margin-bottom: 0.44rem;
+}
+.ekchat-root .chat-context-bar{
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin: 0 auto 12px;
+  width: min(1040px, calc(100% - 24px));
+  border: 1px solid color-mix(in oklab, var(--border) 88%, var(--accent) 12%);
+  background: color-mix(in oklab, var(--panel) 88%, var(--bg) 12%);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ekchat-root[data-theme="dark"] .chat-context-bar{
+  background: color-mix(in oklab, var(--panel) 82%, var(--bg) 18%);
+  border-color: color-mix(in oklab, var(--border) 70%, var(--accent) 30%);
+}
+.ekchat-root .chat-context-main{
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 2px;
+}
+.ekchat-root .chat-context-main::-webkit-scrollbar{
+  height: 6px;
+}
+.ekchat-root .chat-context-main::-webkit-scrollbar-thumb{
+  background: color-mix(in oklab, var(--border) 72%, var(--accent) 28%);
+  border-radius: 999px;
+}
+.ekchat-root .chat-context-label{
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--muted);
+  margin-right: 2px;
+}
+.ekchat-root .chat-context-chip{
+  border: 1px solid color-mix(in oklab, var(--border) 78%, transparent 22%);
+  background: var(--chip);
+  color: color-mix(in oklab, var(--text) 76%, var(--muted) 24%);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.74rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ekchat-root .chat-context-chip.active{
+  background: color-mix(in oklab, var(--accent-50) 70%, var(--chip) 30%);
+  border-color: color-mix(in oklab, var(--accent) 58%, var(--border) 42%);
+  color: color-mix(in oklab, var(--accent-600) 70%, var(--text) 30%);
+}
+.ekchat-root .chat-context-meta{
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.ekchat-root .message-meta-row{
+  margin-top: 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ekchat-root .message-sources{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.ekchat-root .message-source-count{
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.ekchat-root .message-source-chip{
+  border: 1px solid color-mix(in oklab, var(--border) 76%, transparent 24%);
+  background: color-mix(in oklab, var(--panel) 88%, var(--accent-50) 12%);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ekchat-root .message-actions{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ekchat-root .message-action-btn{
+  border: 1px solid color-mix(in oklab, var(--border) 82%, transparent 18%);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 9px;
+  padding: 4px 8px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.ekchat-root .message-action-btn:hover{
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--border) 60%);
+}
+.ekchat-root .chat-inline-error{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(max(4px, env(safe-area-inset-bottom)) + 88px);
+  z-index: 4;
+  width: min(920px, calc(100% - 26px));
+  border: 1px solid color-mix(in oklab, var(--danger) 48%, var(--border) 52%);
+  background: color-mix(in oklab, var(--panel) 86%, var(--danger-50) 14%);
+  border-radius: 12px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.ekchat-root .chat-inline-error-text{
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.ekchat-root .chat-inline-error-actions{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ekchat-root .jump-latest-btn{
+  position: absolute;
+  right: 24px;
+  bottom: calc(max(4px, env(safe-area-inset-bottom)) + 86px);
+  z-index: 4;
+  border: 1px solid color-mix(in oklab, var(--accent) 58%, var(--border) 42%);
+  background: var(--panel);
+  color: var(--accent-600);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.18);
+}
+.ekchat-root .composer-shell{
+  bottom: 0;
+  padding-top: 8px;
+  padding-bottom: calc(4px + env(safe-area-inset-bottom));
+  background: transparent;
+}
+.ekchat-root .composer .input{
+  max-width: 980px;
+}
+.ekchat-root .chat-window{
+  background: var(--bg);
+}
+.ekchat-root .md-table-shell{
+  margin: 0.76rem 0 1.06rem;
+  border: 1px solid color-mix(in oklab, var(--border) 86%, var(--accent) 14%);
+  border-radius: 12px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--panel) 94%, var(--accent-50) 6%);
+}
+.ekchat-root .md-table-toolbar{
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 7px 9px;
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 86%, var(--accent) 14%);
+  background: color-mix(in oklab, var(--panel) 88%, var(--bg) 12%);
+}
+.ekchat-root .md-table-action{
+  border: 1px solid color-mix(in oklab, var(--border) 82%, transparent 18%);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ekchat-root .md-table-action:hover{
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--border) 60%);
+  color: var(--accent-600);
+}
+.ekchat-root .md .md-table-wrap{
+  margin: 0;
+  max-height: min(56vh, 520px);
+  overflow: auto;
+}
+.ekchat-root .md table{
+  margin: 0;
+  min-width: 620px;
+}
+.ekchat-root .md thead th{
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.ekchat-root .md tbody tr:nth-child(even){
+  background: color-mix(in oklab, var(--panel) 90%, var(--bg) 10%);
+}
+.ekchat-root .generate-inline-status{
+  margin: 10px 0 0;
+  border: 1px solid color-mix(in oklab, var(--border) 86%, var(--accent) 14%);
+  background: color-mix(in oklab, var(--panel) 90%, var(--accent-50) 10%);
+  border-radius: 12px;
+  padding: 8px 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.ekchat-root .generate-inline-spinner{
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  border: 2px solid color-mix(in oklab, var(--border) 75%, transparent 25%);
+  border-top-color: var(--accent-600);
+  animation: spin .85s linear infinite;
+}
+.ekchat-root .generate-inline-error{
+  margin: 12px 0;
+  border: 1px solid color-mix(in oklab, var(--danger) 46%, var(--border) 54%);
+  background: color-mix(in oklab, var(--panel) 86%, var(--danger-50) 14%);
+  border-radius: 12px;
+  padding: 9px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.83rem;
+  font-weight: 600;
+}
+.ekchat-root .generate-inline-error-actions{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ekchat-root .doc-chat-empty-actions{
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+@media (max-width: 960px){
+  .ekchat-root .messages{
+    padding-bottom: clamp(96px, 16vh, 142px);
+  }
+  .ekchat-root .chat-context-bar{
+    width: calc(100% - 16px);
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .ekchat-root .chat-context-meta{
+    font-size: 0.72rem;
+  }
+  .ekchat-root .chat-inline-error{
+    width: calc(100% - 16px);
+    bottom: calc(max(4px, env(safe-area-inset-bottom)) + 84px);
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .ekchat-root .jump-latest-btn{
+    right: 12px;
+    bottom: calc(max(4px, env(safe-area-inset-bottom)) + 82px);
+  }
+  .ekchat-root .message-meta-row{
+    align-items: flex-start;
+  }
+}
+
+/* Embedded PipelinePro doc-chat height fixes + larger visible conversation area. */
+.ekchat-root .app-shell.no-sidebar,
+.ekchat-root .app-shell.no-sidebar .main,
+.ekchat-root .app-shell.no-sidebar .generate-panel,
+.ekchat-root .app-shell.no-sidebar .generate-body.doc-chat-body,
+.ekchat-root .app-shell.no-sidebar .doc-chat-shell,
+.ekchat-root .app-shell.no-sidebar .chat-window{
+  height: 100%;
+  min-height: 0;
+}
+.ekchat-root .app-shell.no-sidebar .generate-body.doc-chat-body{
+  padding: 0;
+  overflow: hidden;
+}
+.ekchat-root .app-shell.no-sidebar .generate-body.doc-chat-body .generate-grid{
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  gap: 0;
+}
+.ekchat-root .app-shell.no-sidebar .doc-chat-shell{
+  flex: 1 1 auto;
+}
+.ekchat-root .chat-window{
+  background: var(--bg);
+}
+.ekchat-root .messages{
+  padding-bottom: 12px;
+  scroll-padding-bottom: 16px;
+}
+.ekchat-root .composer-shell{
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  pointer-events: auto;
+  padding: 0;
+  margin: 8px auto calc(10px + env(safe-area-inset-bottom));
+  width: 100%;
+  z-index: 3;
+}
+.ekchat-root .composer{
+  width: min(80%, 860px);
+  max-width: min(80%, 860px);
+}
+.ekchat-root .composer .input{
+  width: 100%;
+  max-width: 100%;
+  border-radius: 16px;
+}
+.ekchat-root .chat-inline-error{
+  bottom: calc(env(safe-area-inset-bottom) + 112px);
+}
+.ekchat-root .jump-latest-btn{
+  bottom: calc(env(safe-area-inset-bottom) + 108px);
+}
+@media (max-width: 960px){
+  .ekchat-root .messages{
+    padding-bottom: 10px;
+  }
+  .ekchat-root .composer{
+    width: calc(100% - 16px);
+    max-width: calc(100% - 16px);
+  }
+  .ekchat-root .chat-inline-error{
+    bottom: calc(env(safe-area-inset-bottom) + 98px);
+  }
+  .ekchat-root .jump-latest-btn{
+    bottom: calc(env(safe-area-inset-bottom) + 94px);
+  }
+}

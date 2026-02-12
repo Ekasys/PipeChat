@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PipelinePro - Offline</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at top, #0f172a, #020617);
+        color: #e2e8f0;
+        text-align: center;
+        padding: 24px;
+      }
+      .card {
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid rgba(99, 102, 241, 0.4);
+        border-radius: 16px;
+        padding: 32px;
+        max-width: 420px;
+        width: 100%;
+        box-shadow: 0 20px 50px rgba(2, 6, 23, 0.8);
+      }
+      h1 {
+        margin-top: 0;
+        font-size: 1.75rem;
+        color: #c7d2fe;
+      }
+      p {
+        line-height: 1.6;
+        margin-bottom: 24px;
+        color: #94a3b8;
+      }
+      button {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 12px 28px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+      }
+      button:hover {
+        transform: translateY(-1px);
+        opacity: 0.95;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>You're Offline</h1>
+      <p>
+        PipelinePro needs a connection to load the latest capture intel and proposal data. Please reconnect to the
+        internet and retry.
+      </p>
+      <button type="button" onclick="window.location.reload()">Try Again</button>
+    </main>
+  </body>
+</html>
+

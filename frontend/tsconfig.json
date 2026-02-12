@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "allowJs": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    
+    /* Path aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "lucide-react": ["src/features/ekchat/native/vendor/lucide-react.tsx"],
+      "react-markdown": ["src/features/ekchat/native/vendor/react-markdown.tsx"],
+      "remark-gfm": ["src/features/ekchat/native/vendor/remark-gfm.ts"],
+      "rehype-raw": ["src/features/ekchat/native/vendor/rehype-raw.ts"],
+      "rehype-sanitize": ["src/features/ekchat/native/vendor/rehype-sanitize.ts"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
