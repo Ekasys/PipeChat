@@ -58,9 +58,9 @@ export default function FlowStepper({
         position: 'relative',
         p: { xs: 2, md: 3 },
         borderRadius: 3,
-        background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.55) 100%)',
+        background: 'linear-gradient(135deg, var(--pp-dark-85) 0%, var(--pp-slate-55) 100%)',
         border: '1px solid rgba(99, 102, 241, 0.25)',
-        boxShadow: '0 20px 45px rgba(15, 23, 42, 0.35)',
+        boxShadow: '0 20px 45px var(--pp-dark-35)',
         overflow: 'hidden',
       }}
     >
@@ -72,7 +72,7 @@ export default function FlowStepper({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'rgba(15, 23, 42, 0.55)',
+            background: 'var(--pp-dark-55)',
             zIndex: 2,
             backdropFilter: 'blur(4px)',
           }}
@@ -106,7 +106,7 @@ export default function FlowStepper({
                 step.accentColor,
                 0.65
               )} 100%)`
-            : 'rgba(15, 23, 42, 0.55)'
+            : 'var(--pp-dark-55)'
 
           const circleBorder = accented
             ? `1px solid ${alpha(step.accentColor, 0.8)}`
@@ -114,7 +114,7 @@ export default function FlowStepper({
 
           const circleShadow = accented
             ? `0 12px 24px ${alpha(step.accentColor, 0.4)}`
-            : '0 6px 14px rgba(15, 23, 42, 0.35)'
+            : '0 6px 14px var(--pp-dark-35)'
 
           const connectorColumn = gridColumn + 1
           const nextStep = steps[index + 1]

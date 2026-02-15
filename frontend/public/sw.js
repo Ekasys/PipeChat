@@ -1,5 +1,5 @@
 // NOTE: bump this when changing cache strategy to ensure clients refresh stale HTML.
-const CACHE_NAME = 'pipelinepro-cache-v2'
+const CACHE_NAME = 'pipelinepro-cache-v3'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE_URLS = ['/', '/index.html', '/manifest.json', OFFLINE_URL]
 

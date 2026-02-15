@@ -1853,30 +1853,6 @@
   color: var(--text);
   width: fit-content;
 }
-.generate-file-chip span{
-  max-width: 360px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.generate-file-chip-remove{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border: none;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 0;
-  flex: 0 0 auto;
-}
-.generate-file-chip-remove:hover{
-  color: var(--text);
-  background: color-mix(in oklab, var(--chip) 60%, var(--accent-50) 40%);
-}
 .generate-toggle{
   display:flex;
   align-items:center;
@@ -2526,14 +2502,14 @@
 /* Native Ekchat without internal sidebar. */
 .ekchat-root .app-shell.no-sidebar{
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
+  grid-template-rows: auto 1fr;
 }
 .ekchat-root .app-shell.no-sidebar .topbar{
-  display: none;
+  display: flex;
 }
 .ekchat-root .app-shell.no-sidebar .main{
   grid-column: 1;
-  grid-row: 1;
+  grid-row: 2;
   height: 100% !important;
   min-height: 0;
 }

@@ -63,7 +63,7 @@ export default function SearchFilterBar({
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                background: 'rgba(15, 23, 42, 0.5)',
+                background: 'var(--pp-dark-50)',
               },
             }}
           />

@@ -1,7 +1,8 @@
 """Configuration management for PipelinePro"""
 from pydantic_settings import BaseSettings
+from pydantic import field_validator, model_validator
 from typing import Optional
-import os
+import json
 
 
 class Settings(BaseSettings):
@@ -66,6 +67,35 @@ class Settings(BaseSettings):
     
     # Audit
     AUDIT_LOG_RETENTION_DAYS: int = 2555  # 7 years
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def _parse_cors_origins(cls, value):
+        if isinstance(value, list):
+            return [str(item).strip() for item in value if str(item).strip()]
+        if isinstance(value, str):
+            raw = value.strip()
+            if not raw:
+                return []
+            if raw.startswith("["):
+                try:
+                    parsed = json.loads(raw)
+                    if isinstance(parsed, list):
+                        return [str(item).strip() for item in parsed if str(item).strip()]
+                except json.JSONDecodeError:
+                    pass
+            return [item.strip() for item in raw.split(",") if item.strip()]
+        return ["http://localhost:3000", "http://localhost:5173"]
+
+    @model_validator(mode="after")
+    def _validate_production_cors(self):
+        env = (self.ENVIRONMENT or "").strip().lower()
+        is_non_dev = env not in {"", "dev", "development", "local", "test", "testing"}
+        if is_non_dev and any(origin.strip() == "*" for origin in self.CORS_ORIGINS):
+            raise ValueError(
+                "CORS wildcard '*' is not allowed outside development/test environments"
+            )
+        return self
     
     class Config:
         env_file = ".env"

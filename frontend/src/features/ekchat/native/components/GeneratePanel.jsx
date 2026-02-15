@@ -1695,12 +1695,6 @@ export default function GeneratePanel({
     if (rfpInputRef.current) rfpInputRef.current.value = ''
   }
 
-  function clearRfpFile(){
-    setRfpFile(null)
-    if (rfpInputRef.current) rfpInputRef.current.value = ''
-    pushToast('Removed selected RFP', 'info')
-  }
-
   function onPickSectionRfp(e){
     const file = (e.target.files || [])[0]
     if (!file) return
@@ -2138,17 +2132,7 @@ export default function GeneratePanel({
               </div>
               {rfpFile && (
                 <div className="generate-file-chip">
-                  <FileText size={16}/>
-                  <span>{rfpFile.name}</span>
-                  <button
-                    className="generate-file-chip-remove"
-                    type="button"
-                    onClick={clearRfpFile}
-                    aria-label="Remove selected RFP"
-                    title="Remove selected RFP"
-                  >
-                    <X size={12}/>
-                  </button>
+                  <FileText size={16}/> {rfpFile.name}
                 </div>
               )}
               <label className="generate-toggle">

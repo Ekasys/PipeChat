@@ -1,6 +1,6 @@
 """Configuration for Ekchat API service."""
 from pydantic_settings import BaseSettings
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from typing import Optional
 import json
 
@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "Ekchat API"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
+    ENVIRONMENT: str = "development"
 
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/pipelinepro"
     DATABASE_POOL_SIZE: int = 10
@@ -57,6 +58,16 @@ class Settings(BaseSettings):
                     return [raw]
             return [item.strip() for item in raw.split(",") if item.strip()]
         return ["http://localhost:5173"]
+
+    @model_validator(mode="after")
+    def _validate_production_cors(self):
+        env = (self.ENVIRONMENT or "").strip().lower()
+        is_non_dev = env not in {"", "dev", "development", "local", "test", "testing"}
+        if is_non_dev and any(origin.strip() == "*" for origin in self.CORS_ORIGINS):
+            raise ValueError(
+                "CORS wildcard '*' is not allowed outside development/test environments"
+            )
+        return self
 
 
 settings = Settings()

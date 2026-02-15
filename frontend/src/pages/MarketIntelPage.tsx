@@ -28,7 +28,6 @@ import {
   TableHead,
   TableRow,
   Alert,
-  useMediaQuery,
   useTheme,
   Snackbar,
   Accordion,
@@ -37,6 +36,7 @@ import {
   Divider,
   LinearProgress,
 } from '@mui/material'
+import { alpha } from '@mui/material/styles'
 import {
   Add,
   Search,
@@ -56,6 +56,20 @@ import CaptureQualification from '../components/CaptureQualification'
 const STAGES = ['rumor', 'confirmed', 'rfi', 'qualified']
 
 export default function MarketIntelPage() {
+  const theme = useTheme()
+  const isDark = theme.palette.mode === 'dark'
+
+  const panelBackground = isDark
+    ? 'linear-gradient(135deg, var(--pp-slate-80) 0%, var(--pp-dark-90) 100%)'
+    : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(244, 248, 255, 0.96) 100%)'
+  const inputBackground = isDark ? alpha(theme.palette.common.black, 0.28) : alpha(theme.palette.primary.main, 0.06)
+  const inputHoverBackground = isDark ? alpha(theme.palette.common.black, 0.38) : alpha(theme.palette.primary.main, 0.1)
+  const accordionBackground = isDark ? alpha(theme.palette.common.black, 0.18) : alpha(theme.palette.primary.main, 0.05)
+  const intelCardBackground = isDark
+    ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%)'
+    : 'linear-gradient(135deg, rgba(95, 134, 255, 0.12) 0%, rgba(138, 99, 255, 0.12) 100%)'
+  const intelCardBorder = isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(95, 134, 255, 0.2)'
+
   const [intel, setIntel] = useState<MarketIntel[]>([])
   const [loading, setLoading] = useState(true)
   const [openDialog, setOpenDialog] = useState(false)
@@ -367,7 +381,7 @@ export default function MarketIntelPage() {
         <Paper
           sx={{
             p: 2,
-            background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)',
+            background: panelBackground,
           }}
         >
           <Box display="flex" gap={2} alignItems="center">
@@ -383,9 +397,9 @@ export default function MarketIntelPage() {
               }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  background: 'rgba(15, 23, 42, 0.5)',
+                  background: inputBackground,
                   '&:hover': {
-                    background: 'rgba(15, 23, 42, 0.7)',
+                    background: inputHoverBackground,
                   },
                 },
               }}
@@ -407,7 +421,7 @@ export default function MarketIntelPage() {
           </Box>
 
           {/* Advanced Filters */}
-          <Accordion sx={{ mt: 2, background: 'rgba(15, 23, 42, 0.3)' }}>
+          <Accordion sx={{ mt: 2, background: accordionBackground }}>
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Box display="flex" alignItems="center" gap={1}>
                 <FilterList />
@@ -513,7 +527,7 @@ export default function MarketIntelPage() {
               sx={{
                 p: 3,
                 minHeight: 500,
-                background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)',
+                background: panelBackground,
               }}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, stage)}
@@ -550,8 +564,8 @@ export default function MarketIntelPage() {
                       }}
                       sx={{
                         cursor: 'pointer',
-                        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        background: intelCardBackground,
+                        border: intelCardBorder,
                         transition: 'all 0.3s ease',
                         '&:hover': {
                           transform: 'translateY(-4px)',
@@ -586,7 +600,7 @@ export default function MarketIntelPage() {
                               }}
                               sx={{ 
                                 color: 'error.main',
-                                '&:hover': { background: 'rgba(244, 67, 54, 0.2)' }
+                                '&:hover': { background: alpha(theme.palette.error.main, isDark ? 0.2 : 0.12) }
                               }}
                             >
                               <Delete fontSize="small" />

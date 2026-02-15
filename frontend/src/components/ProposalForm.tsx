@@ -110,7 +110,7 @@ export default function ProposalForm({
                 helperText={errors.name?.message}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -124,7 +124,7 @@ export default function ProposalForm({
                   disabled
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      background: 'rgba(15, 23, 42, 0.3)',
+                      background: 'var(--pp-dark-30)',
                     },
                   }}
                   helperText="This proposal is linked to the current opportunity"
@@ -141,7 +141,7 @@ export default function ProposalForm({
                         {...field}
                         label="Opportunity"
                         sx={{
-                          background: 'rgba(15, 23, 42, 0.5)',
+                          background: 'var(--pp-dark-50)',
                         }}
                       >
                         {opportunities.length === 0 ? (
@@ -176,7 +176,7 @@ export default function ProposalForm({
                 defaultValue="1.0"
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />

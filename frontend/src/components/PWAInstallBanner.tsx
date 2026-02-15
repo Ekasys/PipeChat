@@ -75,7 +75,7 @@ export default function PWAInstallBanner() {
         sx={{
           mb: 2,
           border: '1px solid rgba(99, 102, 241, 0.3)',
-          background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95))',
+          background: 'linear-gradient(135deg, var(--pp-slate-90), var(--pp-dark-95))',
         }}
       >
         <AlertTitle>{installAccepted ? 'PipelinePro is installing' : 'Install PipelinePro as an app'}</AlertTitle>

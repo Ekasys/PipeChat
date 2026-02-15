@@ -1,5 +1,5 @@
 import { alpha, createTheme } from '@mui/material/styles'
-import type { PaletteMode } from '@mui/material/styles'
+import type { PaletteMode } from '@mui/material'
 
 export function createAppTheme(mode: PaletteMode) {
   const isDark = mode === 'dark'
@@ -12,6 +12,7 @@ export function createAppTheme(mode: PaletteMode) {
     : '0 18px 40px rgba(42, 56, 95, 0.1)'
 
   return createTheme({
+    spacing: 8,
     palette: {
       mode,
       primary: {
@@ -43,26 +44,53 @@ export function createAppTheme(mode: PaletteMode) {
       },
     },
     typography: {
-      fontFamily: ['"Space Grotesk"', '"Manrope"', '"Segoe UI"', 'sans-serif'].join(','),
+      fontFamily: ['"Manrope"', '"Segoe UI"', 'sans-serif'].join(','),
+      h1: {
+        fontFamily: ['"Sora"', '"Manrope"', '"Segoe UI"', 'sans-serif'].join(','),
+        fontWeight: 750,
+        letterSpacing: '-0.03em',
+      },
+      h2: {
+        fontFamily: ['"Sora"', '"Manrope"', '"Segoe UI"', 'sans-serif'].join(','),
+        fontWeight: 740,
+        letterSpacing: '-0.028em',
+      },
+      h3: {
+        fontFamily: ['"Sora"', '"Manrope"', '"Segoe UI"', 'sans-serif'].join(','),
+        fontWeight: 730,
+        letterSpacing: '-0.024em',
+      },
       h4: {
-        fontWeight: 700,
+        fontFamily: ['"Sora"', '"Manrope"', '"Segoe UI"', 'sans-serif'].join(','),
+        fontWeight: 720,
         letterSpacing: '-0.02em',
       },
       h5: {
-        fontWeight: 650,
+        fontFamily: ['"Sora"', '"Manrope"', '"Segoe UI"', 'sans-serif'].join(','),
+        fontWeight: 680,
       },
       h6: {
-        fontWeight: 650,
+        fontFamily: ['"Sora"', '"Manrope"', '"Segoe UI"', 'sans-serif'].join(','),
+        fontWeight: 660,
       },
       subtitle2: {
-        letterSpacing: '0.04em',
+        letterSpacing: '0.05em',
+        textTransform: 'uppercase',
+      },
+      overline: {
+        letterSpacing: '0.12em',
+        fontWeight: 700,
+      },
+      caption: {
+        fontFamily: ['"IBM Plex Mono"', '"SFMono-Regular"', 'monospace'].join(','),
       },
       button: {
-        letterSpacing: '0.02em',
+        fontFamily: ['"Sora"', '"Manrope"', '"Segoe UI"', 'sans-serif'].join(','),
+        letterSpacing: '0.03em',
       },
     },
     shape: {
-      borderRadius: 14,
+      borderRadius: 16,
     },
     components: {
       MuiCssBaseline: {
@@ -143,8 +171,8 @@ export function createAppTheme(mode: PaletteMode) {
       MuiListItemButton: {
         styleOverrides: {
           root: {
-            borderRadius: 10,
-            margin: '3px 8px',
+            borderRadius: 12,
+            margin: '8px 8px',
             color: isDark ? '#b9c8e6' : '#243459',
             '&:hover': {
               background: isDark
@@ -171,6 +199,7 @@ export function createAppTheme(mode: PaletteMode) {
             textTransform: 'none',
             borderRadius: 12,
             fontWeight: 600,
+            fontFamily: ['"Sora"', '"Manrope"', '"Segoe UI"', 'sans-serif'].join(','),
           },
           contained: {
             background: 'linear-gradient(120deg, #5f86ff 0%, #8a63ff 100%)',

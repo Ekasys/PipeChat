@@ -141,7 +141,7 @@ export default function AccountForm({
                 helperText={errors.name?.message}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -153,7 +153,7 @@ export default function AccountForm({
                 {...register('agency')}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -169,7 +169,7 @@ export default function AccountForm({
                       {...field}
                       label="Organization Type"
                       sx={{
-                        background: 'rgba(15, 23, 42, 0.5)',
+                        background: 'var(--pp-dark-50)',
                       }}
                     >
                       <MenuItem value="">None</MenuItem>
@@ -193,7 +193,7 @@ export default function AccountForm({
                       {...field}
                       label="Account Type"
                       sx={{
-                        background: 'rgba(15, 23, 42, 0.5)',
+                        background: 'var(--pp-dark-50)',
                       }}
                     >
                       <MenuItem value="">None</MenuItem>
@@ -219,7 +219,7 @@ export default function AccountForm({
                 helperText={errors.website?.message}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -231,7 +231,7 @@ export default function AccountForm({
                 {...register('phone')}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -245,7 +245,7 @@ export default function AccountForm({
                 {...register('address')}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -274,7 +274,7 @@ export default function AccountForm({
                   sx={{
                     mb: 1,
                     '& .MuiOutlinedInput-root': {
-                      background: 'rgba(15, 23, 42, 0.5)',
+                      background: 'var(--pp-dark-50)',
                     },
                   }}
                 />
@@ -314,7 +314,7 @@ export default function AccountForm({
                   sx={{
                     mb: 1,
                     '& .MuiOutlinedInput-root': {
-                      background: 'rgba(15, 23, 42, 0.5)',
+                      background: 'var(--pp-dark-50)',
                     },
                   }}
                 />
@@ -341,7 +341,7 @@ export default function AccountForm({
                       {...field}
                       label="Relationship Health"
                       sx={{
-                        background: 'rgba(15, 23, 42, 0.5)',
+                        background: 'var(--pp-dark-50)',
                       }}
                     >
                       <MenuItem value="">None</MenuItem>
@@ -363,7 +363,7 @@ export default function AccountForm({
                 {...register('notes')}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />

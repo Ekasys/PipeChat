@@ -67,3 +67,49 @@ jobs:
             --name "${{ secrets.ACA_PIPELINEPRO_WEB_APP_NAME }}" \
             --resource-group "${{ secrets.ACA_RESOURCE_GROUP }}" \
             --image "${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-frontend:${{ steps.tag.outputs.tag }}"
+
+      - name: Enforce API ingress as internal only
+        run: |
+          az containerapp ingress update \
+            --name "${{ secrets.ACA_PIPELINEPRO_API_APP_NAME }}" \
+            --resource-group "${{ secrets.ACA_RESOURCE_GROUP }}" \
+            --type internal \
+            --target-port 8000 \
+            --transport auto
+
+          az containerapp ingress update \
+            --name "${{ secrets.ACA_EKCHAT_API_APP_NAME }}" \
+            --resource-group "${{ secrets.ACA_RESOURCE_GROUP }}" \
+            --type internal \
+            --target-port 8001 \
+            --transport auto
+
+      - name: Enforce frontend ingress as external
+        run: |
+          az containerapp ingress update \
+            --name "${{ secrets.ACA_PIPELINEPRO_WEB_APP_NAME }}" \
+            --resource-group "${{ secrets.ACA_RESOURCE_GROUP }}" \
+            --type external \
+            --target-port 80 \
+            --transport auto
+
+      - name: Set frontend internal API upstream URLs
+        run: |
+          az containerapp update \
+            --name "${{ secrets.ACA_PIPELINEPRO_WEB_APP_NAME }}" \
+            --resource-group "${{ secrets.ACA_RESOURCE_GROUP }}" \
+            --set-env-vars \
+              BACKEND_URL="${{ secrets.ACA_BACKEND_URL }}" \
+              EKCHAT_API_URL="${{ secrets.ACA_EKCHAT_API_URL }}"
+
+      - name: Tighten backend and ekchat CORS origins
+        run: |
+          az containerapp update \
+            --name "${{ secrets.ACA_PIPELINEPRO_API_APP_NAME }}" \
+            --resource-group "${{ secrets.ACA_RESOURCE_GROUP }}" \
+            --set-env-vars CORS_ORIGINS="${{ secrets.ACA_CORS_ORIGINS }}"
+
+          az containerapp update \
+            --name "${{ secrets.ACA_EKCHAT_API_APP_NAME }}" \
+            --resource-group "${{ secrets.ACA_RESOURCE_GROUP }}" \
+            --set-env-vars CORS_ORIGINS="${{ secrets.ACA_CORS_ORIGINS }}"

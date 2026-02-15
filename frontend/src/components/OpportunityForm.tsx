@@ -130,7 +130,7 @@ export default function OpportunityForm({
                 {...register('name', { required: 'Title is required' })}
                 error={!!errors.name}
                 helperText={errors.name?.message}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -142,7 +142,7 @@ export default function OpportunityForm({
                 label="Opportunity Summary"
                 placeholder="Provide the high-level summary or synopsis for this pursuit"
                 {...register('summary')}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -157,7 +157,7 @@ export default function OpportunityForm({
                     <Select
                       {...field}
                       label="Status"
-                      sx={{ background: 'rgba(15, 23, 42, 0.5)' }}
+                      sx={{ background: 'var(--pp-dark-50)' }}
                     >
                       <MenuItem value="active">Active</MenuItem>
                       <MenuItem value="won">Won</MenuItem>
@@ -180,7 +180,7 @@ export default function OpportunityForm({
                     <Select
                       {...field}
                       label="BD Stage"
-                      sx={{ background: 'rgba(15, 23, 42, 0.5)' }}
+                      sx={{ background: 'var(--pp-dark-50)' }}
                     >
                       <MenuItem value="qualification">Qualification</MenuItem>
                       <MenuItem value="pursuit">Pursuit</MenuItem>
@@ -205,7 +205,7 @@ export default function OpportunityForm({
                 fullWidth
                 label="BD Status"
                 {...register('bd_status')}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -214,7 +214,7 @@ export default function OpportunityForm({
                 fullWidth
                 label="Agency"
                 {...register('agency')}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -223,7 +223,7 @@ export default function OpportunityForm({
                 fullWidth
                 label="Sub Agency"
                 {...register('sub_agency')}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -232,7 +232,7 @@ export default function OpportunityForm({
                 fullWidth
                 label="Capture Manager Assigned"
                 {...register('capture_manager')}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -247,7 +247,7 @@ export default function OpportunityForm({
                     <Select
                       {...field}
                       label="Role"
-                      sx={{ background: 'rgba(15, 23, 42, 0.5)' }}
+                      sx={{ background: 'var(--pp-dark-50)' }}
                     >
                       <MenuItem value="prime">Prime</MenuItem>
                       <MenuItem value="sub">Sub</MenuItem>
@@ -262,7 +262,7 @@ export default function OpportunityForm({
                 fullWidth
                 label="Contract Vehicle"
                 {...register('contract_vehicle')}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -272,7 +272,7 @@ export default function OpportunityForm({
                 label="Estimated Value ($)"
                 type="number"
                 {...register('value', { valueAsNumber: true })}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -283,7 +283,7 @@ export default function OpportunityForm({
                 type="date"
                 {...register('rfp_submission_date')}
                 InputLabelProps={{ shrink: true }}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -294,7 +294,7 @@ export default function OpportunityForm({
                 type="date"
                 {...register('due_date')}
                 InputLabelProps={{ shrink: true }}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -305,7 +305,7 @@ export default function OpportunityForm({
                 type="date"
                 {...register('award_date')}
                 InputLabelProps={{ shrink: true }}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -315,7 +315,7 @@ export default function OpportunityForm({
                 label="PWin (%)"
                 type="number"
                 {...register('pwin', { valueAsNumber: true, min: 0, max: 100 })}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -325,7 +325,7 @@ export default function OpportunityForm({
                 label="PTW ($)"
                 type="number"
                 {...register('ptw', { valueAsNumber: true })}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -335,7 +335,7 @@ export default function OpportunityForm({
                 label="Number of Years"
                 type="number"
                 {...register('number_of_years', { valueAsNumber: true })}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -346,7 +346,7 @@ export default function OpportunityForm({
                 type="date"
                 {...register('next_task_due')}
                 InputLabelProps={{ shrink: true }}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -357,7 +357,7 @@ export default function OpportunityForm({
                 minRows={2}
                 label="Next Task Comments"
                 {...register('next_task_comments')}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -368,7 +368,7 @@ export default function OpportunityForm({
                 minRows={3}
                 label="History & Notes"
                 {...register('history_notes')}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -380,7 +380,7 @@ export default function OpportunityForm({
                 label="Agency POCs"
                 placeholder="List points of contact (Name – Role – Email – Phone)"
                 {...register('agency_pocs')}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
 
@@ -392,7 +392,7 @@ export default function OpportunityForm({
                 label="Business Sectors"
                 placeholder="Separate multiple sectors with commas"
                 {...register('business_sectors')}
-                sx={{ '& .MuiOutlinedInput-root': { background: 'rgba(15, 23, 42, 0.5)' } }}
+                sx={{ '& .MuiOutlinedInput-root': { background: 'var(--pp-dark-50)' } }}
               />
             </Grid>
           </Grid>

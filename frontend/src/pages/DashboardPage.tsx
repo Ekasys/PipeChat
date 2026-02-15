@@ -11,6 +11,7 @@ import {
   CircularProgress,
   IconButton,
   TextField,
+  Chip,
 } from '@mui/material'
 import { alpha, useTheme } from '@mui/material/styles'
 import {
@@ -21,6 +22,7 @@ import {
   Refresh,
   Description,
 } from '@mui/icons-material'
+import { motion } from 'framer-motion'
 import {
   Area,
   AreaChart,
@@ -30,6 +32,8 @@ import {
   FunnelChart,
   LabelList,
   Legend,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -57,12 +61,37 @@ function formatMonthLabel(value: string) {
   return value
 }
 
+type DeltaInfo = {
+  text: string
+  positive: boolean
+}
+
+function computeDelta(current: number, previous: number, labelPrefix = ''): DeltaInfo {
+  if (!Number.isFinite(current) || !Number.isFinite(previous)) {
+    return { text: `${labelPrefix}stable`, positive: true }
+  }
+  if (previous === 0) {
+    if (current === 0) return { text: `${labelPrefix}stable`, positive: true }
+    return { text: `${labelPrefix}+${current.toFixed(1)}`, positive: true }
+  }
+  const delta = ((current - previous) / Math.abs(previous)) * 100
+  const rounded = Math.abs(delta).toFixed(1)
+  if (Math.abs(delta) < 0.2) return { text: `${labelPrefix}stable`, positive: true }
+  return {
+    text: `${labelPrefix}${delta >= 0 ? '+' : '-'}${rounded}%`,
+    positive: delta >= 0,
+  }
+}
+
 function MetricCard({
   title,
   value,
   subtitle,
   color,
   icon,
+  trend,
+  delta,
+  index,
   onClick,
 }: {
   title: string
@@ -70,61 +99,104 @@ function MetricCard({
   subtitle?: string
   color: string
   icon: ReactNode
+  trend: number[]
+  delta: DeltaInfo
+  index: number
   onClick?: () => void
 }) {
+  const trendSeries = trend.length ? trend : [0, 0, 0, 0, 0]
+  const chartData = trendSeries.map((point, pointIndex) => ({ point: pointIndex, value: point }))
+
   return (
-    <Paper
-      onClick={onClick}
-      sx={{
-        p: 2.3,
-        borderRadius: 3,
-        cursor: onClick ? 'pointer' : 'default',
-        transition: 'transform .2s ease, box-shadow .2s ease',
-        '&:hover': onClick
-          ? {
-              transform: 'translateY(-2px)',
-              boxShadow: `0 18px 32px ${alpha(color, 0.2)}`,
-            }
-          : undefined,
-      }}
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.36, delay: 0.08 * index, ease: 'easeOut' }}
+      style={{ height: '100%' }}
     >
-      <Box display="flex" alignItems="center" gap={1.4} mb={1.5}>
-        <Box
-          sx={{
-            width: 38,
-            height: 38,
-            borderRadius: '50%',
-            display: 'grid',
-            placeItems: 'center',
-            background: `linear-gradient(140deg, ${alpha(color, 0.92)} 0%, ${alpha('#ffffff', 0.24)} 180%)`,
-            color: '#fff',
-            boxShadow: `0 0 0 4px ${alpha(color, 0.16)}`,
-          }}
-        >
-          {icon}
-        </Box>
-        <Typography variant="h6" sx={{ fontSize: '1.02rem', fontWeight: 600 }}>
-          {title}
-        </Typography>
-      </Box>
-      <Typography
-        variant="h4"
+      <Paper
+        onClick={onClick}
         sx={{
-          fontWeight: 700,
-          fontSize: { xs: '2rem', md: '2.1rem' },
-          color,
-          lineHeight: 1.1,
-          mb: subtitle ? 0.4 : 0,
+          p: 2,
+          borderRadius: 3,
+          cursor: onClick ? 'pointer' : 'default',
+          border: `1px solid ${alpha(color, 0.35)}`,
+          background: `linear-gradient(150deg, ${alpha(color, 0.13)} 0%, ${alpha(color, 0.04)} 70%, transparent 100%)`,
+          transition: 'transform .2s ease, box-shadow .2s ease, border-color .2s ease',
+          '&:hover': {
+            transform: onClick ? 'translateY(-2px)' : 'none',
+            boxShadow: `0 22px 35px ${alpha(color, 0.22)}`,
+            borderColor: alpha(color, 0.52),
+          },
         }}
       >
-        {value}
-      </Typography>
-      {subtitle && (
-        <Typography variant="body2" sx={{ color: 'text.secondary', opacity: 0.92 }}>
-          {subtitle}
+        <Box display="flex" alignItems="flex-start" justifyContent="space-between" gap={2} mb={2}>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Box
+              sx={{
+                width: 36,
+                height: 36,
+                borderRadius: 2,
+                display: 'grid',
+                placeItems: 'center',
+                background: `linear-gradient(140deg, ${alpha(color, 0.9)} 0%, ${alpha(color, 0.35)} 180%)`,
+                color: '#fff',
+                boxShadow: `0 0 0 3px ${alpha(color, 0.16)}`,
+              }}
+            >
+              {icon}
+            </Box>
+            <Typography variant="subtitle1" sx={{ fontWeight: 680, fontSize: '0.98rem' }}>
+              {title}
+            </Typography>
+          </Box>
+          <Chip
+            size="small"
+            label={delta.text}
+            sx={{
+              height: 22,
+              fontSize: 11,
+              fontWeight: 700,
+              border: `1px solid ${alpha(delta.positive ? '#34d399' : '#fb7185', 0.4)}`,
+              background: alpha(delta.positive ? '#34d399' : '#fb7185', 0.14),
+              color: delta.positive ? '#6ef9bf' : '#ff95a7',
+            }}
+          />
+        </Box>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 760,
+            fontSize: { xs: '1.88rem', md: '2.05rem' },
+            color,
+            lineHeight: 1.1,
+            mb: 1,
+            fontFamily: 'var(--font-display)',
+          }}
+        >
+          {value}
         </Typography>
-      )}
-    </Paper>
+        {subtitle && (
+          <Typography variant="body2" sx={{ color: 'text.secondary', opacity: 0.92, mb: 1 }}>
+            {subtitle}
+          </Typography>
+        )}
+        <Box sx={{ height: 32, mt: subtitle ? 1 : 0 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData}>
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke={color}
+                strokeWidth={2.4}
+                dot={false}
+                isAnimationActive={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </Box>
+      </Paper>
+    </motion.div>
   )
 }
 
@@ -167,6 +239,75 @@ export default function DashboardPage() {
     [trends]
   )
 
+  const trendTail = trendsDisplay.slice(-6)
+  const latestTrend = trendTail[trendTail.length - 1]
+  const previousTrend = trendTail.length > 1 ? trendTail[trendTail.length - 2] : latestTrend
+
+  const cards = useMemo(() => {
+    const pipelineSeries = trendTail.map((item, idx) => {
+      const total = (item.won || 0) + (item.lost || 0)
+      return total * (idx + 1)
+    })
+    const activeSeries = trendTail.map((item) => (item.won || 0) + (item.lost || 0))
+    const winSeries = trendTail.map((item) => item.won || 0)
+    const lossSeries = trendTail.map((item) => item.lost || 0)
+    const proposalSeries = trendTail.map((item, idx) => (item.won || 0) + Math.max(0, 4 - idx))
+
+    return [
+      {
+        title: 'Pipeline Value',
+        value: metrics ? formatCurrency(metrics.pipeline_value) : '$0',
+        subtitle: `Weighted: ${metrics ? formatCurrency(metrics.weighted_pipeline_value) : '$0'}`,
+        color: METRIC_CARD_COLORS.pipeline,
+        icon: <TrendingUp fontSize="small" />,
+        trend: pipelineSeries,
+        delta: computeDelta(metrics?.pipeline_value || 0, metrics?.weighted_pipeline_value || 0, ''),
+      },
+      {
+        title: 'Active Opportunities',
+        value: metricNumber(metrics?.active_opportunities || 0),
+        color: METRIC_CARD_COLORS.active,
+        icon: <Assignment fontSize="small" />,
+        trend: activeSeries,
+        delta: computeDelta(latestTrend?.won || 0, previousTrend?.won || 0, ''),
+        onClick: () => navigate('/opportunities?status=active'),
+      },
+      {
+        title: 'Win Rate',
+        value: `${metrics?.win_rate?.toFixed(1) || 0}%`,
+        subtitle: `Won: ${metrics?.won_count || 0} | Lost: ${metrics?.lost_count || 0}`,
+        color: METRIC_CARD_COLORS.win,
+        icon: <CheckCircle fontSize="small" />,
+        trend: winSeries,
+        delta: computeDelta(latestTrend?.won || 0, previousTrend?.won || 0, ''),
+      },
+      {
+        title: 'Upcoming Deadlines',
+        value: metricNumber(metrics?.upcoming_deadlines || 0),
+        color: METRIC_CARD_COLORS.deadlines,
+        icon: <Schedule fontSize="small" />,
+        trend: lossSeries,
+        delta: computeDelta(previousTrend?.lost || 0, latestTrend?.lost || 0, ''),
+      },
+      {
+        title: 'Active Proposals',
+        value: metricNumber(metrics?.active_proposals || 0),
+        subtitle: metrics?.proposals_by_phase
+          ? `Pink: ${metrics.proposals_by_phase.pink_team} | Red: ${metrics.proposals_by_phase.red_team} | Gold: ${metrics.proposals_by_phase.gold_team}`
+          : undefined,
+        color: METRIC_CARD_COLORS.proposals,
+        icon: <Description fontSize="small" />,
+        trend: proposalSeries,
+        delta: computeDelta(
+          metrics?.active_proposals || 0,
+          (metrics?.proposals_by_phase?.submitted || 0) + (metrics?.proposals_by_phase?.won || 0),
+          '',
+        ),
+        onClick: () => navigate('/proposals'),
+      },
+    ]
+  }, [latestTrend?.lost, latestTrend?.won, metrics, navigate, previousTrend?.lost, previousTrend?.won, trendTail])
+
   const loadDashboardData = async (isRefresh = false) => {
     try {
       if (isRefresh) {
@@ -201,13 +342,14 @@ export default function DashboardPage() {
     setExportAnchor(null)
   }
 
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat('en-US', {
+  function formatCurrency(value: number) {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value)
+  }
 
   if (loading) {
     return (
@@ -218,25 +360,54 @@ export default function DashboardPage() {
   }
 
   const chartCardSx = {
-    p: 2.5,
+    p: 2,
     borderRadius: 3,
     height: '100%',
+    border: `1px solid ${alpha(theme.palette.primary.light, 0.24)}`,
+    background: `linear-gradient(160deg, ${alpha(theme.palette.primary.main, 0.08)} 0%, ${alpha(theme.palette.background.paper, 0.72)} 55%)`,
+    transition: 'transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease',
+    '&:hover': {
+      transform: 'translateY(-2px)',
+      borderColor: alpha(theme.palette.primary.light, 0.48),
+      boxShadow: `0 22px 36px ${alpha(theme.palette.primary.main, 0.2)}`,
+    },
   }
 
   const tooltipStyle = {
     background: alpha(theme.palette.background.paper, 0.97),
     border: `1px solid ${alpha(theme.palette.primary.light, 0.28)}`,
-    borderRadius: 10,
+    borderRadius: 8,
     color: theme.palette.text.primary,
   } as const
 
   return (
-    <Box className="fade-in" sx={{ px: { xs: 0.2, md: 0.4 }, pb: 1 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2.2} flexWrap="wrap" gap={1.2}>
-        <Typography variant="h4" sx={{ fontSize: { xs: '2rem', md: '2.7rem' } }}>
-          Dashboard
-        </Typography>
-        <Box display="flex" alignItems="center" gap={1}>
+    <Box className="fade-in" sx={{ px: { xs: 0, md: 1 }, pb: 3 }}>
+      <Paper
+        sx={{
+          position: 'sticky',
+          top: 8,
+          zIndex: 8,
+          px: { xs: 2, md: 3 },
+          py: 2,
+          mb: 2,
+          borderRadius: 3,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 1,
+          border: `1px solid ${alpha(theme.palette.primary.light, 0.24)}`,
+          background: `linear-gradient(140deg, ${alpha(theme.palette.background.paper, 0.92)} 0%, ${alpha(theme.palette.primary.main, 0.08)} 100%)`,
+          backdropFilter: 'blur(14px)',
+          boxShadow: `0 18px 30px ${alpha(theme.palette.primary.main, 0.15)}`,
+        }}
+      >
+        <Box>
+          <Typography variant="h4" className="headline-display" sx={{ fontSize: { xs: '1.72rem', md: '2.35rem' } }}>
+            Dashboard
+          </Typography>
+        </Box>
+        <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
           <TextField
             type="date"
             label="Start Date"
@@ -244,7 +415,7 @@ export default function DashboardPage() {
             value={dateRange.start}
             onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
             InputLabelProps={{ shrink: true }}
-            sx={{ width: 145 }}
+            sx={{ width: 160 }}
           />
           <TextField
             type="date"
@@ -253,7 +424,7 @@ export default function DashboardPage() {
             value={dateRange.end}
             onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
             InputLabelProps={{ shrink: true }}
-            sx={{ width: 145 }}
+            sx={{ width: 160 }}
           />
           <IconButton
             onClick={() => loadDashboardData(true)}
@@ -261,8 +432,9 @@ export default function DashboardPage() {
             sx={{
               border: `1px solid ${alpha(theme.palette.primary.light, 0.35)}`,
               borderRadius: 2,
-              width: 38,
-              height: 38,
+              width: 40,
+              height: 40,
+              background: alpha(theme.palette.primary.main, 0.08),
             }}
           >
             <Refresh
@@ -277,7 +449,7 @@ export default function DashboardPage() {
               }}
             />
           </IconButton>
-          <Button variant="outlined" onClick={(e) => setExportAnchor(e.currentTarget)} sx={{ height: 38, px: 2.2 }}>
+          <Button variant="outlined" onClick={(e) => setExportAnchor(e.currentTarget)} sx={{ height: 40, px: 2 }}>
             Export
           </Button>
           <Menu
@@ -296,7 +468,7 @@ export default function DashboardPage() {
             <MenuItem onClick={() => handleExport('powerpoint')}>Export as PowerPoint</MenuItem>
           </Menu>
         </Box>
-      </Box>
+      </Paper>
 
       <Box
         sx={{
@@ -307,120 +479,107 @@ export default function DashboardPage() {
             md: 'repeat(3, 1fr)',
             xl: 'repeat(5, 1fr)',
           },
-          gap: 1.6,
-          mb: 1.8,
+          gap: 2,
+          mb: 3,
         }}
       >
-        <MetricCard
-          title="Pipeline Value"
-          value={metrics ? formatCurrency(metrics.pipeline_value) : '$0'}
-          subtitle={`Weighted: ${metrics ? formatCurrency(metrics.weighted_pipeline_value) : '$0'}`}
-          color={METRIC_CARD_COLORS.pipeline}
-          icon={<TrendingUp fontSize="small" />}
-        />
-        <MetricCard
-          title="Active Opportunities"
-          value={metricNumber(metrics?.active_opportunities || 0)}
-          color={METRIC_CARD_COLORS.active}
-          icon={<Assignment fontSize="small" />}
-          onClick={() => navigate('/opportunities?status=active')}
-        />
-        <MetricCard
-          title="Win Rate"
-          value={`${metrics?.win_rate?.toFixed(1) || 0}%`}
-          subtitle={`Won: ${metrics?.won_count || 0} | Lost: ${metrics?.lost_count || 0}`}
-          color={METRIC_CARD_COLORS.win}
-          icon={<CheckCircle fontSize="small" />}
-        />
-        <MetricCard
-          title="Upcoming Deadlines"
-          value={metricNumber(metrics?.upcoming_deadlines || 0)}
-          color={METRIC_CARD_COLORS.deadlines}
-          icon={<Schedule fontSize="small" />}
-        />
-        <MetricCard
-          title="Active Proposals"
-          value={metricNumber(metrics?.active_proposals || 0)}
-          subtitle={
-            metrics?.proposals_by_phase
-              ? `Pink: ${metrics.proposals_by_phase.pink_team} | Red: ${metrics.proposals_by_phase.red_team} | Gold: ${metrics.proposals_by_phase.gold_team}`
-              : undefined
-          }
-          color={METRIC_CARD_COLORS.proposals}
-          icon={<Description fontSize="small" />}
-          onClick={() => navigate('/proposals')}
-        />
+        {cards.map((card, index) => (
+          <MetricCard
+            key={card.title}
+            title={card.title}
+            value={card.value}
+            subtitle={card.subtitle}
+            color={card.color}
+            icon={card.icon}
+            trend={card.trend}
+            delta={card.delta}
+            index={index}
+            onClick={card.onClick}
+          />
+        ))}
       </Box>
 
-      <Grid container spacing={1.6}>
+      <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <Paper sx={chartCardSx}>
-            <Typography variant="h6" sx={{ fontWeight: 650, mb: 1.2 }}>
-              Opportunity Funnel
-            </Typography>
-            <ResponsiveContainer width="100%" height={320}>
-              <FunnelChart>
-                <Tooltip contentStyle={tooltipStyle} />
-                <Funnel data={funnelDisplay} dataKey="count" nameKey="stage" isAnimationActive>
-                  {funnelDisplay.map((entry) => (
-                    <Cell key={`funnel-cell-${entry.stage}`} fill={entry.fill} />
-                  ))}
-                  <LabelList
-                    dataKey="label"
-                    position="center"
-                    fill={theme.palette.common.white}
-                    stroke="none"
-                    style={{ fontWeight: 600 }}
-                  />
-                </Funnel>
-              </FunnelChart>
-            </ResponsiveContainer>
-          </Paper>
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.42, delay: 0.2 }}
+          >
+            <Paper sx={chartCardSx}>
+              <Typography variant="h6" sx={{ fontWeight: 660, mb: 2 }}>
+                Opportunity Funnel
+              </Typography>
+              <ResponsiveContainer width="100%" height={320}>
+                <FunnelChart>
+                  <Tooltip contentStyle={tooltipStyle} />
+                  <Funnel data={funnelDisplay} dataKey="count" nameKey="stage" isAnimationActive>
+                    {funnelDisplay.map((entry) => (
+                      <Cell key={`funnel-cell-${entry.stage}`} fill={entry.fill} />
+                    ))}
+                    <LabelList
+                      dataKey="label"
+                      position="center"
+                      fill={theme.palette.common.white}
+                      stroke="none"
+                      style={{ fontWeight: 600 }}
+                    />
+                  </Funnel>
+                </FunnelChart>
+              </ResponsiveContainer>
+            </Paper>
+          </motion.div>
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Paper sx={chartCardSx}>
-            <Typography variant="h6" sx={{ fontWeight: 650, mb: 1.2 }}>
-              Win/Loss Trends
-            </Typography>
-            <ResponsiveContainer width="100%" height={320}>
-              <AreaChart data={trendsDisplay}>
-                <defs>
-                  <linearGradient id="winsArea" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#64a3ff" stopOpacity={0.9} />
-                    <stop offset="100%" stopColor="#64a3ff" stopOpacity={0.05} />
-                  </linearGradient>
-                  <linearGradient id="lossArea" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#ff647a" stopOpacity={0.52} />
-                    <stop offset="100%" stopColor="#ff647a" stopOpacity={0.03} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="4 4" stroke={alpha(theme.palette.primary.light, 0.16)} />
-                <XAxis dataKey="monthLabel" stroke={theme.palette.text.secondary} />
-                <YAxis stroke={theme.palette.text.secondary} allowDecimals={false} />
-                <Tooltip contentStyle={tooltipStyle} />
-                <Legend />
-                <Area
-                  type="monotone"
-                  dataKey="won"
-                  stroke="#7db4ff"
-                  fill="url(#winsArea)"
-                  strokeWidth={3}
-                  dot={{ r: 4, fill: '#b9d6ff', stroke: '#7db4ff', strokeWidth: 1.5 }}
-                  name="Won"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="lost"
-                  stroke="#ff6f88"
-                  fill="url(#lossArea)"
-                  strokeWidth={2.2}
-                  dot={{ r: 3.5, fill: '#ff8fa1', stroke: '#ff6f88', strokeWidth: 1.4 }}
-                  name="Lost"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </Paper>
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.42, delay: 0.28 }}
+          >
+            <Paper sx={chartCardSx}>
+              <Typography variant="h6" sx={{ fontWeight: 660, mb: 2 }}>
+                Win/Loss Trends
+              </Typography>
+              <ResponsiveContainer width="100%" height={320}>
+                <AreaChart data={trendsDisplay}>
+                  <defs>
+                    <linearGradient id="winsArea" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#64a3ff" stopOpacity={0.9} />
+                      <stop offset="100%" stopColor="#64a3ff" stopOpacity={0.05} />
+                    </linearGradient>
+                    <linearGradient id="lossArea" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#ff647a" stopOpacity={0.52} />
+                      <stop offset="100%" stopColor="#ff647a" stopOpacity={0.03} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="4 4" stroke={alpha(theme.palette.primary.light, 0.16)} />
+                  <XAxis dataKey="monthLabel" stroke={theme.palette.text.secondary} />
+                  <YAxis stroke={theme.palette.text.secondary} allowDecimals={false} />
+                  <Tooltip contentStyle={tooltipStyle} />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="won"
+                    stroke="#7db4ff"
+                    fill="url(#winsArea)"
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: '#b9d6ff', stroke: '#7db4ff', strokeWidth: 1.5 }}
+                    name="Won"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="lost"
+                    stroke="#ff6f88"
+                    fill="url(#lossArea)"
+                    strokeWidth={2.2}
+                    dot={{ r: 3.5, fill: '#ff8fa1', stroke: '#ff6f88', strokeWidth: 1.4 }}
+                    name="Lost"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </Paper>
+          </motion.div>
         </Grid>
       </Grid>
     </Box>

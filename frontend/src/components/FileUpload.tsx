@@ -234,9 +234,9 @@ export default function FileUpload({
                   border: '1px solid rgba(99, 102, 241, 0.2)',
                   borderRadius: 2,
                   mb: 1,
-                  background: 'rgba(15, 23, 42, 0.5)',
+                  background: 'var(--pp-dark-50)',
                   '&:hover': {
-                    background: 'rgba(15, 23, 42, 0.7)',
+                    background: 'var(--pp-dark-70)',
                   },
                 }}
               >

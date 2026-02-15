@@ -50,10 +50,15 @@ class EkchatErrorBoundary extends React.Component<
       return (
         <div
           style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
             padding: 24,
             fontFamily:
               'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial',
             color: '#111827',
+            background: '#f8fafc',
+            overflow: 'auto',
           }}
         >
           <h2 style={{ margin: 0, fontSize: 18 }}>Ekchat failed to load</h2>

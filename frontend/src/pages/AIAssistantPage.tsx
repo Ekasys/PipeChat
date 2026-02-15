@@ -373,7 +373,7 @@ export default function AIAssistantPage() {
             label="AI Model"
             onChange={(e) => setSelectedModel(e.target.value)}
             sx={{
-              background: 'rgba(15, 23, 42, 0.5)',
+              background: 'var(--pp-dark-50)',
               '& .MuiOutlinedInput-notchedOutline': {
                 borderColor: 'rgba(99, 102, 241, 0.3)',
               },
@@ -443,7 +443,7 @@ export default function AIAssistantPage() {
                           padding: '12px',
                           borderRadius: '8px',
                           border: '1px solid rgba(99, 102, 241, 0.3)',
-                          background: 'rgba(15, 23, 42, 0.5)',
+                          background: 'var(--pp-dark-50)',
                           color: 'white',
                           fontSize: '14px',
                         }}
@@ -483,7 +483,7 @@ export default function AIAssistantPage() {
             {parsingRFP && (
               <Card
                 sx={{
-                  background: 'rgba(15, 23, 42, 0.5)',
+                  background: 'var(--pp-dark-50)',
                   border: '1px solid rgba(99, 102, 241, 0.3)',
                 }}
               >
@@ -498,7 +498,7 @@ export default function AIAssistantPage() {
             {!parsingRFP && rfpSummary && (
               <Card
                 sx={{
-                  background: 'rgba(15, 23, 42, 0.5)',
+                  background: 'var(--pp-dark-50)',
                   border: '1px solid rgba(99, 102, 241, 0.3)',
                 }}
               >
@@ -535,7 +535,7 @@ export default function AIAssistantPage() {
             {!parsingRFP && !rfpSummary && (
               <Card
                 sx={{
-                  background: 'rgba(15, 23, 42, 0.3)',
+                  background: 'var(--pp-dark-30)',
                   border: '1px solid rgba(99, 102, 241, 0.2)',
                 }}
               >
@@ -570,7 +570,7 @@ export default function AIAssistantPage() {
                 placeholder="Paste resume text here..."
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -588,7 +588,7 @@ export default function AIAssistantPage() {
                 placeholder="Paste SOW text here..."
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -609,7 +609,7 @@ export default function AIAssistantPage() {
             {tailoredResume && (
               <Card
                 sx={{
-                  background: 'rgba(15, 23, 42, 0.5)',
+                  background: 'var(--pp-dark-50)',
                   border: '1px solid rgba(99, 102, 241, 0.3)',
                 }}
               >
@@ -658,7 +658,7 @@ export default function AIAssistantPage() {
                       padding: '12px',
                       borderRadius: '8px',
                       border: '1px solid rgba(99, 102, 241, 0.3)',
-                      background: 'rgba(15, 23, 42, 0.5)',
+                      background: 'var(--pp-dark-50)',
                       color: 'white',
                       fontSize: '14px',
                     }}
@@ -683,7 +683,7 @@ export default function AIAssistantPage() {
                       padding: '12px',
                       borderRadius: '8px',
                       border: '1px solid rgba(99, 102, 241, 0.3)',
-                      background: 'rgba(15, 23, 42, 0.5)',
+                      background: 'var(--pp-dark-50)',
                       color: 'white',
                       fontSize: '14px',
                     }}
@@ -711,7 +711,7 @@ export default function AIAssistantPage() {
             {draftedContent && (
               <Card
                 sx={{
-                  background: 'rgba(15, 23, 42, 0.5)',
+                  background: 'var(--pp-dark-50)',
                   border: '1px solid rgba(99, 102, 241, 0.3)',
                 }}
               >
@@ -760,7 +760,7 @@ export default function AIAssistantPage() {
                       padding: '12px',
                       borderRadius: '8px',
                       border: '1px solid rgba(99, 102, 241, 0.3)',
-                      background: 'rgba(15, 23, 42, 0.5)',
+                      background: 'var(--pp-dark-50)',
                       color: 'white',
                       fontSize: '14px',
                     }}
@@ -802,7 +802,7 @@ export default function AIAssistantPage() {
             {winThemes.length > 0 && (
               <Card
                 sx={{
-                  background: 'rgba(15, 23, 42, 0.5)',
+                  background: 'var(--pp-dark-50)',
                   border: '1px solid rgba(99, 102, 241, 0.3)',
                 }}
               >
@@ -855,7 +855,7 @@ export default function AIAssistantPage() {
                 placeholder="Paste proposal text to analyze for risks..."
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -876,7 +876,7 @@ export default function AIAssistantPage() {
             {risks.length > 0 && (
               <Card
                 sx={{
-                  background: 'rgba(15, 23, 42, 0.5)',
+                  background: 'var(--pp-dark-50)',
                   border: '1px solid rgba(99, 102, 241, 0.3)',
                 }}
               >

@@ -18,7 +18,7 @@ import {
   CircularProgress,
   Divider,
 } from '@mui/material'
-import { Save, Edit, Add, Delete, Business, AutoAwesome } from '@mui/icons-material'
+import { Save, Edit, Add, Delete, Business, AutoAwesome, CheckCircleRounded } from '@mui/icons-material'
 import { companyProfileService, CompanyProfile } from '../services/companyProfileService'
 import { aiService } from '../services/aiService'
 import { aiProviderService } from '../services/aiProviderService'
@@ -76,6 +76,9 @@ export default function CompanyProfilePage() {
   const [editingType, setEditingType] = useState<'performance' | 'contract' | 'award' | null>(null)
   const [generatingFields, setGeneratingFields] = useState<Record<string, boolean>>({})
   const [selectedModel, setSelectedModel] = useState<string>('gpt-5-mini')
+  const [dirtyFields, setDirtyFields] = useState<Set<string>>(new Set())
+  const [savedFields, setSavedFields] = useState<Set<string>>(new Set())
+  const [savedCount, setSavedCount] = useState(0)
   const { toast, showToast, hideToast } = useToast()
 
   useEffect(() => {
@@ -160,11 +163,15 @@ export default function CompanyProfilePage() {
       setPastPerformance(data.past_performance_highlights || [])
       setKeyContracts(data.key_contracts || [])
       setAwards(data.awards_recognition || [])
+      setDirtyFields(new Set())
+      setSavedFields(new Set())
     } catch (error: any) {
       if (error.response?.status === 404) {
         // Profile doesn't exist yet - show empty form
         setProfile(null)
         setFormData({ company_name: '', country: 'United States' })
+        setDirtyFields(new Set())
+        setSavedFields(new Set())
       } else {
         console.error('Failed to load company profile:', error)
         showToast('Failed to load company profile', 'error')
@@ -174,7 +181,41 @@ export default function CompanyProfilePage() {
     }
   }
 
+  const updateFormField = (field: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }))
+    setDirtyFields((prev) => {
+      if (prev.has(field)) return prev
+      const next = new Set(prev)
+      next.add(field)
+      return next
+    })
+    setSavedFields((prev) => {
+      if (!prev.has(field)) return prev
+      const next = new Set(prev)
+      next.delete(field)
+      return next
+    })
+  }
+
+  const isSavedField = (field: string) => savedFields.has(field) && !dirtyFields.has(field)
+
+  const fieldSaveProps = (field: string) => ({
+    helperText: isSavedField(field) ? 'Saved' : ' ',
+    FormHelperTextProps: {
+      sx: {
+        color: isSavedField(field) ? 'success.main' : 'transparent',
+        fontWeight: 600,
+        minHeight: 20,
+      },
+    },
+  })
+
   const handleSave = async () => {
+    const savedSnapshot = new Set(dirtyFields)
+
     try {
       setSaving(true)
       const dataToSave = {
@@ -192,6 +233,9 @@ export default function CompanyProfilePage() {
         await companyProfileService.create(dataToSave)
         showToast('Company profile created successfully', 'success')
       }
+      setSavedFields(savedSnapshot)
+      setSavedCount(savedSnapshot.size)
+      setDirtyFields(new Set())
       setEditMode(false)
       loadProfile()
     } catch (error: any) {
@@ -234,13 +278,32 @@ export default function CompanyProfilePage() {
           </Typography>
         </Box>
         {!editMode ? (
-          <Button variant="contained" startIcon={<Edit />} onClick={() => setEditMode(true)}>
-            Edit Profile
-          </Button>
+          <Box display="flex" alignItems="center" gap={1.5}>
+            {savedCount > 0 && (
+              <Chip
+                size="small"
+                color="success"
+                icon={<CheckCircleRounded />}
+                label={`${savedCount} field${savedCount === 1 ? '' : 's'} saved`}
+              />
+            )}
+            <Button variant="contained" startIcon={<Edit />} onClick={() => {
+              setSavedCount(0)
+              setEditMode(true)
+            }}>
+              Edit Profile
+            </Button>
+          </Box>
         ) : (
-          <Box display="flex" gap={2}>
+          <Box display="flex" alignItems="center" gap={2}>
+            {dirtyFields.size > 0 && (
+              <Typography variant="caption" sx={{ color: 'warning.main', fontWeight: 700 }}>
+                {dirtyFields.size} unsaved change{dirtyFields.size === 1 ? '' : 's'}
+              </Typography>
+            )}
             <Button variant="outlined" onClick={() => {
               setEditMode(false)
+              setDirtyFields(new Set())
               loadProfile()
             }}>
               Cancel
@@ -266,7 +329,7 @@ export default function CompanyProfilePage() {
       <Paper
         sx={{
           p: 3,
-          background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)',
+          background: 'linear-gradient(135deg, var(--pp-slate-80) 0%, var(--pp-dark-90) 100%)',
         }}
       >
         <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)}>
@@ -286,9 +349,10 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="Company Name"
                 value={formData.company_name || ''}
-                onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
+                onChange={(e) => updateFormField('company_name', e.target.value)}
                 disabled={!editMode}
                 required
+                {...fieldSaveProps('company_name')}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -296,8 +360,9 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="Legal Name"
                 value={formData.legal_name || ''}
-                onChange={(e) => setFormData({ ...formData, legal_name: e.target.value })}
+                onChange={(e) => updateFormField('legal_name', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('legal_name')}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -305,8 +370,9 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="DUNS Number"
                 value={formData.duns_number || ''}
-                onChange={(e) => setFormData({ ...formData, duns_number: e.target.value })}
+                onChange={(e) => updateFormField('duns_number', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('duns_number')}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -314,8 +380,9 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="CAGE Code"
                 value={formData.cage_code || ''}
-                onChange={(e) => setFormData({ ...formData, cage_code: e.target.value })}
+                onChange={(e) => updateFormField('cage_code', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('cage_code')}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -323,8 +390,9 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="UEI"
                 value={formData.uei || ''}
-                onChange={(e) => setFormData({ ...formData, uei: e.target.value })}
+                onChange={(e) => updateFormField('uei', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('uei')}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -332,8 +400,9 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="Website"
                 value={formData.website || ''}
-                onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                onChange={(e) => updateFormField('website', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('website')}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -342,8 +411,9 @@ export default function CompanyProfilePage() {
                 label="Email"
                 type="email"
                 value={formData.email || ''}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => updateFormField('email', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('email')}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -351,8 +421,9 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="Phone"
                 value={formData.phone || ''}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) => updateFormField('phone', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('phone')}
               />
             </Grid>
             <Grid item xs={12}>
@@ -360,10 +431,11 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="Address"
                 value={formData.address || ''}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                onChange={(e) => updateFormField('address', e.target.value)}
                 disabled={!editMode}
                 multiline
                 rows={2}
+                {...fieldSaveProps('address')}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -371,8 +443,9 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="City"
                 value={formData.city || ''}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                onChange={(e) => updateFormField('city', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('city')}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -380,8 +453,9 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="State"
                 value={formData.state || ''}
-                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                onChange={(e) => updateFormField('state', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('state')}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -389,8 +463,9 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="ZIP Code"
                 value={formData.zip_code || ''}
-                onChange={(e) => setFormData({ ...formData, zip_code: e.target.value })}
+                onChange={(e) => updateFormField('zip_code', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('zip_code')}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -398,8 +473,9 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="Country"
                 value={formData.country || 'United States'}
-                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                onChange={(e) => updateFormField('country', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('country')}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -407,8 +483,9 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="Number of Employees"
                 value={formData.number_of_employees || ''}
-                onChange={(e) => setFormData({ ...formData, number_of_employees: e.target.value })}
+                onChange={(e) => updateFormField('number_of_employees', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('number_of_employees')}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -416,8 +493,9 @@ export default function CompanyProfilePage() {
                 fullWidth
                 label="Annual Revenue"
                 value={formData.annual_revenue || ''}
-                onChange={(e) => setFormData({ ...formData, annual_revenue: e.target.value })}
+                onChange={(e) => updateFormField('annual_revenue', e.target.value)}
                 disabled={!editMode}
+                {...fieldSaveProps('annual_revenue')}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -426,8 +504,9 @@ export default function CompanyProfilePage() {
                 label="Years in Business"
                 type="number"
                 value={formData.years_in_business || ''}
-                onChange={(e) => setFormData({ ...formData, years_in_business: parseInt(e.target.value) || undefined })}
+                onChange={(e) => updateFormField('years_in_business', parseInt(e.target.value) || undefined)}
                 disabled={!editMode}
+                {...fieldSaveProps('years_in_business')}
               />
             </Grid>
           </Grid>
@@ -1480,4 +1559,3 @@ function AwardForm({
     </Box>
   )
 }
-

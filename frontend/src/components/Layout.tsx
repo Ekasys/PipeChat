@@ -15,6 +15,7 @@ import {
   useTheme,
   IconButton,
 } from '@mui/material'
+import { alpha } from '@mui/material/styles'
 import {
   Menu as MenuIcon,
   ExpandLess as ExpandLessIcon,
@@ -43,7 +44,7 @@ interface LayoutProps {
   children: ReactNode
 }
 
-const drawerWidth = 240
+const drawerWidth = 272
 const mobileDrawerWidth = 0
 
 const pipelineMenuItems: Array<{ text: string; path: string; icon: ElementType }> = [
@@ -76,6 +77,50 @@ function parseEkchatSelection(search: string) {
     tab: safeTab,
     historySubsection,
     analyzeSubsection,
+  }
+}
+
+function navItemSx(level: number) {
+  const levelPadding = level === 0 ? 2 : level === 1 ? 3 : 4
+
+  return {
+    pl: levelPadding,
+    pr: 2,
+    py: 1,
+    borderRadius: 2,
+    mx: 1,
+    my: 1,
+    position: 'relative',
+    transition: 'background 180ms ease, transform 180ms ease, box-shadow 180ms ease',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      left: 8,
+      top: 8,
+      bottom: 8,
+      width: 2,
+      borderRadius: 999,
+      background: 'transparent',
+      transition: 'background 180ms ease',
+    },
+    '& .MuiListItemIcon-root': {
+      minWidth: 32,
+      color: 'inherit',
+    },
+    '& .MuiListItemText-primary': {
+      fontSize: level === 0 ? 14.5 : 13.5,
+      fontWeight: level === 0 ? 600 : 500,
+      letterSpacing: level === 0 ? '0.01em' : 0,
+    },
+    '&:hover': {
+      transform: 'translateX(2px)',
+    },
+    '&.Mui-selected::before': {
+      background: 'linear-gradient(180deg, #72a2ff 0%, #9f7dff 100%)',
+    },
+    '&.Mui-selected .MuiListItemText-primary': {
+      fontWeight: 700,
+    },
   }
 }
 
@@ -140,41 +185,52 @@ export default function Layout({ children }: LayoutProps) {
   const isEkchatAnalyze = isEkchatGenerate && ekchatSelection.tab === 'analyze'
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', height: '100vh' }}>
       <AppBar
         position="fixed"
         sx={{
           zIndex: (theme) => theme.zIndex.drawer + 1,
+          borderBottom: `1px solid ${alpha(theme.palette.primary.light, 0.16)}`,
           ...(isMobile && { zIndex: (theme) => theme.zIndex.drawer + 1 }),
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ minHeight: 72, px: { xs: 2, sm: 3 } }}>
           {isMobile && (
             <IconButton
               color="inherit"
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              sx={{ mr: 2 }}
+              sx={{ mr: 1 }}
             >
               <MenuIcon />
             </IconButton>
           )}
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{
-              flexGrow: 1,
-              fontWeight: 700,
-              color: 'text.primary',
-              letterSpacing: '0.01em',
-            }}
-          >
-            PipelinePro
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, gap: 1 }}>
+            <Box
+              sx={{
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #72a2ff 0%, #9f7dff 100%)',
+                boxShadow: '0 0 18px rgba(127, 146, 255, 0.66)',
+              }}
+            />
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{
+                fontWeight: 700,
+                color: 'text.primary',
+                letterSpacing: '0.02em',
+              }}
+            >
+              PipelinePro
+            </Typography>
+          </Box>
           {!isMobile && (
-            <Typography variant="body2" sx={{ mr: 2, color: 'text.secondary' }}>
+            <Typography variant="body2" sx={{ mr: 2, color: 'text.secondary', maxWidth: 280 }} noWrap>
               {user?.email}
             </Typography>
           )}
@@ -182,12 +238,16 @@ export default function Layout({ children }: LayoutProps) {
             color="inherit"
             onClick={toggleMode}
             size="small"
-            sx={{ mr: 1 }}
+            sx={{
+              mr: 1,
+              border: `1px solid ${alpha(theme.palette.primary.light, 0.22)}`,
+              background: alpha(theme.palette.primary.main, 0.06),
+            }}
             title={`Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`}
           >
             {mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
           </IconButton>
-          <Typography variant="body2" sx={{ cursor: 'pointer', color: 'text.secondary' }} onClick={handleLogout}>
+          <Typography variant="body2" sx={{ cursor: 'pointer', color: 'text.secondary', fontWeight: 600 }} onClick={handleLogout}>
             Logout
           </Typography>
         </Toolbar>
@@ -202,23 +262,21 @@ export default function Layout({ children }: LayoutProps) {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            borderRight: `1px solid ${alpha(theme.palette.primary.light, 0.17)}`,
           },
         }}
         ModalProps={{ keepMounted: true }}
       >
         <Toolbar />
-        <Box sx={{ overflow: 'auto', py: 1 }}>
-          <List>
+        <Box sx={{ overflow: 'auto', py: 1, px: 1 }}>
+          <List disablePadding>
             <ListItem disablePadding>
-              <ListItemButton
-                selected={location.pathname !== '/ekchat'}
-                onClick={() => setPipelineOpen((prev) => !prev)}
-              >
-                <ListItemText
-                  primary="PipelinePro"
-                  primaryTypographyProps={{ fontWeight: 700, fontSize: 16 }}
-                />
-                {pipelineOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              <ListItemButton selected={location.pathname !== '/ekchat'} sx={navItemSx(0)} onClick={() => setPipelineOpen((prev) => !prev)}>
+                <ListItemIcon>
+                  <DashboardRounded fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="PipelinePro" />
+                {pipelineOpen ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
               </ListItemButton>
             </ListItem>
             <Collapse in={pipelineOpen} timeout="auto" unmountOnExit>
@@ -227,34 +285,25 @@ export default function Layout({ children }: LayoutProps) {
                   <ListItem key={item.path} disablePadding>
                     <ListItemButton
                       selected={location.pathname === item.path}
-                      sx={{ pl: 4 }}
+                      sx={navItemSx(1)}
                       onClick={() => navigateTo(item.path)}
                     >
                       <ListItemIcon>
                         <item.icon fontSize="small" />
                       </ListItemIcon>
-                      <ListItemText
-                        primary={item.text}
-                        primaryTypographyProps={{ fontSize: 17, fontWeight: 500, textTransform: 'none' }}
-                      />
+                      <ListItemText primary={item.text} />
                     </ListItemButton>
                   </ListItem>
                 ))}
               </List>
             </Collapse>
             <ListItem disablePadding>
-              <ListItemButton
-                selected={isEkchatRoute}
-                onClick={() => setEkchatOpen((prev) => !prev)}
-              >
+              <ListItemButton selected={isEkchatRoute} sx={navItemSx(0)} onClick={() => setEkchatOpen((prev) => !prev)}>
                 <ListItemIcon>
                   <ChatBubbleOutlineRounded fontSize="small" />
                 </ListItemIcon>
-                <ListItemText
-                  primary="EkChat"
-                  primaryTypographyProps={{ fontWeight: 700, fontSize: 16 }}
-                />
-                {ekchatOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                <ListItemText primary="EkChat" />
+                {ekchatOpen ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
               </ListItemButton>
             </ListItem>
             <Collapse in={ekchatOpen} timeout="auto" unmountOnExit>
@@ -262,7 +311,7 @@ export default function Layout({ children }: LayoutProps) {
                 <ListItem disablePadding>
                   <ListItemButton
                     selected={isEkchatRoute && ekchatSelection.mode === 'chats'}
-                    sx={{ pl: 4 }}
+                    sx={navItemSx(1)}
                     onClick={() => navigateTo('/ekchat', '?mode=chats')}
                   >
                     <ListItemText primary="Chats" />
@@ -271,7 +320,7 @@ export default function Layout({ children }: LayoutProps) {
                 <ListItem disablePadding>
                   <ListItemButton
                     selected={isEkchatGenerate}
-                    sx={{ pl: 4 }}
+                    sx={navItemSx(1)}
                     onClick={() => navigateTo('/ekchat', '?mode=generate')}
                   >
                     <ListItemText primary="Generate" />
@@ -281,30 +330,23 @@ export default function Layout({ children }: LayoutProps) {
                 <ListItem disablePadding>
                   <ListItemButton
                     selected={isEkchatHistory}
-                    sx={{ pl: 5 }}
+                    sx={navItemSx(1)}
                     onClick={() => {
                       setEkchatLibraryOpen((prev) => !prev)
                       navigateTo('/ekchat', '?mode=generate&tab=history')
                     }}
                   >
                     <ListItemText primary="Library" />
-                    {ekchatLibraryOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    {ekchatLibraryOpen ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
                   </ListItemButton>
                 </ListItem>
                 <Collapse in={ekchatLibraryOpen} timeout="auto" unmountOnExit>
                   <List disablePadding>
                     <ListItem disablePadding>
                       <ListItemButton
-                        selected={
-                          isEkchatHistory && ekchatSelection.historySubsection === 'style'
-                        }
-                        sx={{ pl: 7 }}
-                        onClick={() =>
-                          navigateTo(
-                            '/ekchat',
-                            '?mode=generate&tab=history&historySubsection=style'
-                          )
-                        }
+                        selected={isEkchatHistory && ekchatSelection.historySubsection === 'style'}
+                        sx={navItemSx(2)}
+                        onClick={() => navigateTo('/ekchat', '?mode=generate&tab=history&historySubsection=style')}
                       >
                         <ListItemText primary="Writing style profile" />
                       </ListItemButton>
@@ -312,13 +354,8 @@ export default function Layout({ children }: LayoutProps) {
                     <ListItem disablePadding>
                       <ListItemButton
                         selected={isEkchatHistory && ekchatSelection.historySubsection === 'chat'}
-                        sx={{ pl: 7 }}
-                        onClick={() =>
-                          navigateTo(
-                            '/ekchat',
-                            '?mode=generate&tab=history&historySubsection=chat'
-                          )
-                        }
+                        sx={navItemSx(2)}
+                        onClick={() => navigateTo('/ekchat', '?mode=generate&tab=history&historySubsection=chat')}
                       >
                         <ListItemText primary="Chat with your documents" />
                       </ListItemButton>
@@ -329,7 +366,7 @@ export default function Layout({ children }: LayoutProps) {
                 <ListItem disablePadding>
                   <ListItemButton
                     selected={isEkchatGenerate && ekchatSelection.tab === 'rfp'}
-                    sx={{ pl: 5 }}
+                    sx={navItemSx(1)}
                     onClick={() => navigateTo('/ekchat', '?mode=generate&tab=rfp')}
                   >
                     <ListItemText primary="Draft Proposal" />
@@ -339,14 +376,14 @@ export default function Layout({ children }: LayoutProps) {
                 <ListItem disablePadding>
                   <ListItemButton
                     selected={isEkchatAnalyze}
-                    sx={{ pl: 5 }}
+                    sx={navItemSx(1)}
                     onClick={() => {
                       setEkchatAnalyzeOpen((prev) => !prev)
                       navigateTo('/ekchat', '?mode=generate&tab=analyze')
                     }}
                   >
                     <ListItemText primary="Analyze Documents" />
-                    {ekchatAnalyzeOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    {ekchatAnalyzeOpen ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
                   </ListItemButton>
                 </ListItem>
                 <Collapse in={ekchatAnalyzeOpen} timeout="auto" unmountOnExit>
@@ -354,13 +391,8 @@ export default function Layout({ children }: LayoutProps) {
                     <ListItem disablePadding>
                       <ListItemButton
                         selected={isEkchatAnalyze && ekchatSelection.analyzeSubsection === 'rfp'}
-                        sx={{ pl: 7 }}
-                        onClick={() =>
-                          navigateTo(
-                            '/ekchat',
-                            '?mode=generate&tab=analyze&analyzeSubsection=rfp'
-                          )
-                        }
+                        sx={navItemSx(2)}
+                        onClick={() => navigateTo('/ekchat', '?mode=generate&tab=analyze&analyzeSubsection=rfp')}
                       >
                         <ListItemText primary="Analyze RFP" />
                       </ListItemButton>
@@ -371,7 +403,7 @@ export default function Layout({ children }: LayoutProps) {
                 <ListItem disablePadding>
                   <ListItemButton
                     selected={isEkchatGenerate && ekchatSelection.tab === 'edit'}
-                    sx={{ pl: 5 }}
+                    sx={navItemSx(1)}
                     onClick={() => navigateTo('/ekchat', '?mode=generate&tab=edit')}
                   >
                     <ListItemText primary="Edit" />
@@ -381,7 +413,7 @@ export default function Layout({ children }: LayoutProps) {
                 <ListItem disablePadding>
                   <ListItemButton
                     selected={isEkchatGenerate && ekchatSelection.tab === 'sections'}
-                    sx={{ pl: 5 }}
+                    sx={navItemSx(1)}
                     onClick={() => navigateTo('/ekchat', '?mode=generate&tab=sections')}
                   >
                     <ListItemText primary="Sections" />
@@ -398,11 +430,10 @@ export default function Layout({ children }: LayoutProps) {
           flexGrow: 1,
           display: 'flex',
           flexDirection: 'column',
-          p: isEkchatRoute ? 0 : { xs: 1.5, sm: 2.25 },
-          height: isEkchatRoute
-            ? '100dvh'
-            : 'auto',
-          overflow: isEkchatRoute ? 'hidden' : 'visible',
+          p: isEkchatRoute ? 0 : { xs: 2, sm: 3 },
+          height: '100%',
+          minHeight: 0,
+          overflow: isEkchatRoute ? 'hidden' : 'auto',
           width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
         }}
       >

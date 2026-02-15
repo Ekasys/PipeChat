@@ -2,11 +2,11 @@
 
 ## Architecture
 
-Production deployment targets Azure Container Apps with three services:
+Production runs in Azure Container Apps with three services:
 
-- `pipelinepro-api` (existing backend)
-- `ekchat-api` (new service)
-- `pipelinepro-web` (frontend)
+- `pipelinepro-web` (frontend, public ingress)
+- `pipelinepro-api` (core backend, internal ingress)
+- `ekchat-api` (Ekchat backend, internal ingress)
 
 Shared managed services:
 
@@ -14,31 +14,63 @@ Shared managed services:
 - Azure Redis
 - Azure Blob Storage
 - Azure OpenAI
-- Azure Key Vault
+- Azure Key Vault (recommended for secret refs)
 
-## Database
+This deployment model uses in-app JWT login as the only user auth mechanism.
+Cloudflare Access / Zero Trust is not required.
 
-- Keep existing Postgres server.
-- Apply Alembic migrations from `backend` (includes `ekchat` schema migration).
-- Ensure `vector` extension is available (migration creates it if supported).
+## Ingress Topology (Required)
 
-## Required Secrets
+- `pipelinepro-web`: external ingress, target port `80`
+- `pipelinepro-api`: internal ingress, target port `8000`
+- `ekchat-api`: internal ingress, target port `8001`
 
-### Core
+All three apps should be in the same ACA environment.
+
+## Runtime Configuration
+
+### Frontend (`pipelinepro-web`)
+
+The Nginx runtime template reads:
+
+- `BACKEND_URL`
+- `EKCHAT_API_URL`
+
+Both must point to the ACA-internal base URLs for backend services.
+
+### Core backend (`pipelinepro-api`)
+
+Required:
 
 - `DATABASE_URL`
+- `DATABASE_SSL=require` (or `sslmode=require` in URL)
+- `REDIS_URL`
 - `SECRET_KEY`
 - `ALGORITHM`
+- `CORS_ORIGINS` (frontend origin only in production)
 
-### Ekchat API
+### Ekchat backend (`ekchat-api`)
 
+Required:
+
+- `DATABASE_URL`
+- `DATABASE_SSL=require` (or `sslmode=require` in URL)
+- `REDIS_URL`
+- `SECRET_KEY`
+- `ALGORITHM`
 - `AZURE_STORAGE_CONNECTION_STRING`
 - `EKCHAT_BLOB_CONTAINER`
-- `EKCHAT_DEFAULT_MODEL`
-- `EKCHAT_LIGHT_TASK_MODEL`
-- `EKCHAT_CHAT_MAX_TOKENS`
+- `CORS_ORIGINS` (frontend origin only in production)
 
-### CI/CD
+Recommended cost defaults:
+
+- `EKCHAT_DEFAULT_MODEL=balanced-mid`
+- `EKCHAT_LIGHT_TASK_MODEL=cost-mini`
+- `EKCHAT_CHAT_MAX_TOKENS=1200`
+
+## Required GitHub Secrets
+
+### Existing CI/CD
 
 - `AZURE_CREDENTIALS`
 - `ACR_NAME`
@@ -48,6 +80,14 @@ Shared managed services:
 - `ACA_EKCHAT_API_APP_NAME`
 - `ACA_PIPELINEPRO_WEB_APP_NAME`
 - `ACA_MIGRATIONS_JOB_NAME`
+
+### Added for internal API routing + CORS hardening
+
+- `ACA_BACKEND_URL`
+- `ACA_EKCHAT_API_URL`
+- `ACA_CORS_ORIGINS`
+
+`ACA_CORS_ORIGINS` can be a single origin (`https://app.example.com`) or a JSON list.
 
 ## GitHub Workflows
 
@@ -65,17 +105,22 @@ Builds and pushes:
 
 Workflow: `.github/workflows/aca-deploy.yml`
 
-- Starts migrations job in ACA
-- Updates backend app image
-- Updates ekchat-api app image
-- Updates frontend app image
+Per deploy:
+
+- starts migrations job
+- updates all 3 images
+- enforces ingress topology (web external, APIs internal)
+- sets frontend API upstream env vars
+- sets strict CORS origins on backend services
 
 ## Routing
 
-Frontend ingress should route:
+Frontend proxies:
 
 - `/api/v1/*` -> `pipelinepro-api`
 - `/api/ekchat/v1/*` -> `ekchat-api`
+
+Configured in: `frontend/nginx.conf`.
 
 ## Tenant Feature Flags
 
@@ -87,8 +132,9 @@ Set in `public.tenants.settings` JSON:
 
 ## Security Requirements
 
-- Ekchat API strictly requires JWT with claims: `sub`, `tenant_id`, `role`, `email`.
-- No `X-User-ID` fallback.
+- JWT auth only for protected APIs.
+- Ekchat API strictly requires claims: `sub`, `tenant_id`, `role`, `email`.
+- No header/subdomain tenant fallback should be used for auth decisions.
 - `ekchat.*` tables enforce Postgres RLS with per-request session context:
   - `SET LOCAL app.tenant_id`
   - `SET LOCAL app.user_id`

@@ -229,7 +229,7 @@ export default function TeamingPage() {
             <Grid item xs={12} md={6} lg={4} key={partner.id}>
               <Card
                 sx={{
-                  background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)',
+                  background: 'linear-gradient(135deg, var(--pp-slate-80) 0%, var(--pp-dark-90) 100%)',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
                   transition: 'all 0.3s ease',
                   '&:hover': {
@@ -428,7 +428,7 @@ export default function TeamingPage() {
                         width: 100,
                         height: 100,
                         borderRadius: '50%',
-                        background: 'rgba(15, 23, 42, 0.9)',
+                        background: 'var(--pp-dark-90)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',

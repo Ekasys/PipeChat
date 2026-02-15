@@ -454,7 +454,7 @@ export default function OpportunitiesPage() {
         sx={{ 
           p: 3, 
           mb: 3,
-          background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)',
+          background: 'linear-gradient(135deg, var(--pp-slate-80) 0%, var(--pp-dark-90) 100%)',
         }}
       >
         <Box display="flex" alignItems="center" gap={2} mb={2}>
@@ -555,7 +555,7 @@ export default function OpportunitiesPage() {
       <TableContainer 
         component={Paper}
         sx={{
-          background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)',
+          background: 'linear-gradient(135deg, var(--pp-slate-80) 0%, var(--pp-dark-90) 100%)',
         }}
       >
         <Table>

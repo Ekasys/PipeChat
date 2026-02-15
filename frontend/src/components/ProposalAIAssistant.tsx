@@ -432,7 +432,7 @@ export default function ProposalAIAssistant({
                 label="AI Model"
                 onChange={(e) => setSelectedModel(e.target.value)}
                 sx={{
-                  background: 'rgba(15, 23, 42, 0.5)',
+                  background: 'var(--pp-dark-50)',
                 }}
               >
                 {availableModels.map((model) => (
@@ -502,7 +502,7 @@ export default function ProposalAIAssistant({
                         return selectedDoc ? (selectedDoc.title || selectedDoc.filename) : ''
                       }}
                       sx={{
-                        background: 'rgba(15, 23, 42, 0.5)',
+                        background: 'var(--pp-dark-50)',
                         color: 'text.primary',
                         '& .MuiOutlinedInput-notchedOutline': {
                           borderColor: 'rgba(99, 102, 241, 0.3)',
@@ -521,7 +521,7 @@ export default function ProposalAIAssistant({
                         PaperProps: {
                           sx: {
                             maxHeight: 400,
-                            background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%)',
+                            background: 'linear-gradient(135deg, var(--pp-slate-95) 0%, var(--pp-dark-98) 100%)',
                             backdropFilter: 'blur(10px)',
                             border: '1px solid rgba(255, 255, 255, 0.1)',
                             '& .MuiMenuItem-root': {
@@ -618,9 +618,9 @@ export default function ProposalAIAssistant({
             <Paper
               sx={{
                 p: 3,
-                background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.92) 0%, rgba(15, 23, 42, 0.98) 100%)',
+                background: 'linear-gradient(135deg, var(--pp-ink-92) 0%, var(--pp-dark-98) 100%)',
                 border: '1px solid rgba(99, 102, 241, 0.22)',
-                boxShadow: '0 20px 45px rgba(15, 23, 42, 0.45)',
+                boxShadow: '0 20px 45px var(--pp-dark-45)',
               }}
             >
               <Grid container spacing={4}>
@@ -642,7 +642,7 @@ export default function ProposalAIAssistant({
                       label="Section Type"
                       onChange={(e) => handleSectionChange(e.target.value as SectionOption['value'])}
                       sx={{
-                        background: 'rgba(15, 23, 42, 0.5)',
+                        background: 'var(--pp-dark-50)',
                         color: 'text.primary',
                         '& .MuiOutlinedInput-notchedOutline': {
                           borderColor: 'rgba(99, 102, 241, 0.3)',
@@ -661,7 +661,7 @@ export default function ProposalAIAssistant({
                         PaperProps: {
                           sx: {
                             maxHeight: 360,
-                            background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%)',
+                            background: 'linear-gradient(135deg, var(--pp-slate-95) 0%, var(--pp-dark-98) 100%)',
                             backdropFilter: 'blur(12px)',
                             border: '1px solid rgba(255, 255, 255, 0.08)',
                             '& .MuiMenuItem-root': {
@@ -725,7 +725,7 @@ export default function ProposalAIAssistant({
                         placeholder={`AI-generated ${currentSection?.label?.toLowerCase() || 'section'} will appear here...`}
                         sx={{
                           '& .MuiOutlinedInput-root': {
-                            background: 'rgba(15, 23, 42, 0.5)',
+                            background: 'var(--pp-dark-50)',
                           },
                         }}
                       />
@@ -737,7 +737,7 @@ export default function ProposalAIAssistant({
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            bgcolor: 'rgba(15, 23, 42, 0.65)',
+                            bgcolor: 'var(--pp-dark-65)',
                             borderRadius: 1,
                           }}
                         >
@@ -834,7 +834,7 @@ export default function ProposalAIAssistant({
                               p: 2,
                               background: isActive
                                 ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(79, 70, 229, 0.22) 100%)'
-                                : 'rgba(15, 23, 42, 0.35)',
+                                : 'var(--pp-dark-35)',
                               borderColor: isActive ? 'rgba(99, 102, 241, 0.7)' : 'rgba(99, 102, 241, 0.2)',
                               transition: 'all 0.2s ease',
                             }}
@@ -949,7 +949,7 @@ export default function ProposalAIAssistant({
                   placeholder="Enter proposal text to analyze for risks..."
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      background: 'rgba(15, 23, 42, 0.5)',
+                      background: 'var(--pp-dark-50)',
                     },
                   }}
                 />

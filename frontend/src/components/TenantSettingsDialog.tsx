@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,7 +13,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { Settings } from '@mui/icons-material'
+import { CheckCircleRounded, Settings } from '@mui/icons-material'
 import api from '../services/api'
 import { useToast } from '../hooks/useToast'
 
@@ -32,11 +33,23 @@ interface TenantSettings {
   }
 }
 
+interface TenantSettingsFormData {
+  name: string
+  subdomain: string
+  data_residency: string
+  compliance_level: string
+  ekchat_chat_enabled: boolean
+  ekchat_rag_enabled: boolean
+  ekchat_rfp_enabled: boolean
+}
+
+type TenantSettingsField = keyof TenantSettingsFormData
+
 export default function TenantSettingsDialog({ open, onClose }: TenantSettingsDialogProps) {
   const { showToast } = useToast()
   const [loading, setLoading] = useState(false)
   const [settings, setSettings] = useState<TenantSettings>({})
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<TenantSettingsFormData>({
     name: '',
     subdomain: '',
     data_residency: '',
@@ -45,6 +58,9 @@ export default function TenantSettingsDialog({ open, onClose }: TenantSettingsDi
     ekchat_rag_enabled: false,
     ekchat_rfp_enabled: false,
   })
+  const [dirtyFields, setDirtyFields] = useState<Set<TenantSettingsField>>(new Set())
+  const [savedFields, setSavedFields] = useState<Set<TenantSettingsField>>(new Set())
+  const [savedAt, setSavedAt] = useState<number | null>(null)
 
   useEffect(() => {
     if (open) {
@@ -68,6 +84,9 @@ export default function TenantSettingsDialog({ open, onClose }: TenantSettingsDi
         ekchat_rag_enabled: !!tenantSettings.ekchat_rag_enabled,
         ekchat_rfp_enabled: !!tenantSettings.ekchat_rfp_enabled,
       })
+      setDirtyFields(new Set())
+      setSavedFields(new Set())
+      setSavedAt(null)
     } catch (error) {
       console.error('Failed to load settings:', error)
       showToast('Failed to load settings', 'error')
@@ -76,7 +95,36 @@ export default function TenantSettingsDialog({ open, onClose }: TenantSettingsDi
     }
   }
 
+  const updateField = <K extends TenantSettingsField>(field: K, value: TenantSettingsFormData[K]) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    setDirtyFields((prev) => {
+      if (prev.has(field)) {
+        return prev
+      }
+      const next = new Set(prev)
+      next.add(field)
+      return next
+    })
+    setSavedFields((prev) => {
+      if (!prev.has(field)) {
+        return prev
+      }
+      const next = new Set(prev)
+      next.delete(field)
+      return next
+    })
+  }
+
+  const isSavedField = (field: TenantSettingsField) => savedFields.has(field) && !dirtyFields.has(field)
+
   const handleSave = async () => {
+    if (dirtyFields.size === 0) {
+      showToast('No changes to save', 'info')
+      return
+    }
+
+    const savedSnapshot = new Set(dirtyFields)
+
     try {
       setLoading(true)
       await api.put('/admin/settings', {
@@ -90,7 +138,9 @@ export default function TenantSettingsDialog({ open, onClose }: TenantSettingsDi
         ekchat_rfp_enabled: formData.ekchat_rfp_enabled,
       })
       showToast('Settings saved successfully', 'success')
-      onClose()
+      setSavedFields(savedSnapshot)
+      setDirtyFields(new Set())
+      setSavedAt(Date.now())
     } catch (error) {
       console.error('Failed to save settings:', error)
       showToast('Failed to save settings', 'error')
@@ -135,9 +185,13 @@ export default function TenantSettingsDialog({ open, onClose }: TenantSettingsDi
                 fullWidth
                 label="Data Residency"
                 value={formData.data_residency}
-                onChange={(e) => setFormData({ ...formData, data_residency: e.target.value })}
+                onChange={(e) => updateField('data_residency', e.target.value)}
                 select
                 SelectProps={{ native: true }}
+                helperText={isSavedField('data_residency') ? 'Saved' : ' '}
+                FormHelperTextProps={{
+                  sx: { color: isSavedField('data_residency') ? 'success.main' : 'text.disabled' },
+                }}
               >
                 <option value="us">United States</option>
                 <option value="eu">European Union</option>
@@ -150,9 +204,13 @@ export default function TenantSettingsDialog({ open, onClose }: TenantSettingsDi
                 fullWidth
                 label="Compliance Level"
                 value={formData.compliance_level}
-                onChange={(e) => setFormData({ ...formData, compliance_level: e.target.value })}
+                onChange={(e) => updateField('compliance_level', e.target.value)}
                 select
                 SelectProps={{ native: true }}
+                helperText={isSavedField('compliance_level') ? 'Saved' : ' '}
+                FormHelperTextProps={{
+                  sx: { color: isSavedField('compliance_level') ? 'success.main' : 'text.disabled' },
+                }}
               >
                 <option value="">None</option>
                 <option value="fedramp_moderate">FedRAMP Moderate</option>
@@ -172,28 +230,49 @@ export default function TenantSettingsDialog({ open, onClose }: TenantSettingsDi
                   control={
                     <Switch
                       checked={formData.ekchat_chat_enabled}
-                      onChange={(e) => setFormData({ ...formData, ekchat_chat_enabled: e.target.checked })}
+                      onChange={(e) => updateField('ekchat_chat_enabled', e.target.checked)}
                     />
                   }
-                  label="Enable Ekchat Chat Core"
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      Enable Ekchat Chat Core
+                      {isSavedField('ekchat_chat_enabled') && (
+                        <CheckCircleRounded sx={{ fontSize: 16, color: 'success.main' }} />
+                      )}
+                    </Box>
+                  }
                 />
                 <FormControlLabel
                   control={
                     <Switch
                       checked={formData.ekchat_rag_enabled}
-                      onChange={(e) => setFormData({ ...formData, ekchat_rag_enabled: e.target.checked })}
+                      onChange={(e) => updateField('ekchat_rag_enabled', e.target.checked)}
                     />
                   }
-                  label="Enable Ekchat RAG + Tables/Plots + Web Search"
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      Enable Ekchat RAG + Tables/Plots + Web Search
+                      {isSavedField('ekchat_rag_enabled') && (
+                        <CheckCircleRounded sx={{ fontSize: 16, color: 'success.main' }} />
+                      )}
+                    </Box>
+                  }
                 />
                 <FormControlLabel
                   control={
                     <Switch
                       checked={formData.ekchat_rfp_enabled}
-                      onChange={(e) => setFormData({ ...formData, ekchat_rfp_enabled: e.target.checked })}
+                      onChange={(e) => updateField('ekchat_rfp_enabled', e.target.checked)}
                     />
                   }
-                  label="Enable Ekchat Advanced RFP Workflows"
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      Enable Ekchat Advanced RFP Workflows
+                      {isSavedField('ekchat_rfp_enabled') && (
+                        <CheckCircleRounded sx={{ fontSize: 16, color: 'success.main' }} />
+                      )}
+                    </Box>
+                  }
                 />
               </Box>
             </Grid>
@@ -201,10 +280,25 @@ export default function TenantSettingsDialog({ open, onClose }: TenantSettingsDi
         )}
       </DialogContent>
       <DialogActions>
+        <Box sx={{ flex: 1, pl: 1 }}>
+          {dirtyFields.size > 0 ? (
+            <Typography variant="caption" sx={{ color: 'warning.main', fontWeight: 600 }}>
+              {dirtyFields.size} unsaved change{dirtyFields.size === 1 ? '' : 's'}
+            </Typography>
+          ) : savedAt ? (
+            <Chip
+              size="small"
+              color="success"
+              icon={<CheckCircleRounded />}
+              label="All changes saved"
+              sx={{ height: 24 }}
+            />
+          ) : null}
+        </Box>
         <Button onClick={onClose} disabled={loading}>
           Cancel
         </Button>
-        <Button onClick={handleSave} variant="contained" disabled={loading}>
+        <Button onClick={handleSave} variant="contained" disabled={loading || dirtyFields.size === 0}>
           {loading ? 'Saving...' : 'Save'}
         </Button>
       </DialogActions>

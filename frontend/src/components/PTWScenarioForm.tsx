@@ -136,7 +136,7 @@ export default function PTWScenarioForm({
                 helperText={errors.name?.message}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -152,7 +152,7 @@ export default function PTWScenarioForm({
                       {...field}
                       label="Opportunity (Optional)"
                       sx={{
-                        background: 'rgba(15, 23, 42, 0.5)',
+                        background: 'var(--pp-dark-50)',
                       }}
                     >
                       <MenuItem value="">None</MenuItem>
@@ -178,7 +178,7 @@ export default function PTWScenarioForm({
                       {...field}
                       label="Scenario Type"
                       sx={{
-                        background: 'rgba(15, 23, 42, 0.5)',
+                        background: 'var(--pp-dark-50)',
                       }}
                     >
                       <MenuItem value="base">Base</MenuItem>
@@ -199,7 +199,7 @@ export default function PTWScenarioForm({
                 {...register('description')}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -212,7 +212,7 @@ export default function PTWScenarioForm({
                 {...register('overhead_rate', { valueAsNumber: true, min: 0 })}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -225,7 +225,7 @@ export default function PTWScenarioForm({
                 {...register('gaa_rate', { valueAsNumber: true, min: 0 })}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -238,7 +238,7 @@ export default function PTWScenarioForm({
                 {...register('fee_rate', { valueAsNumber: true, min: 0 })}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    background: 'rgba(15, 23, 42, 0.5)',
+                    background: 'var(--pp-dark-50)',
                   },
                 }}
               />
@@ -277,7 +277,7 @@ export default function PTWScenarioForm({
                               {...register(`labor_categories.${index}.category` as const)}
                               sx={{
                                 '& .MuiOutlinedInput-root': {
-                                  background: 'rgba(15, 23, 42, 0.5)',
+                                  background: 'var(--pp-dark-50)',
                                 },
                               }}
                             />
@@ -289,7 +289,7 @@ export default function PTWScenarioForm({
                               {...register(`labor_categories.${index}.rate` as const, { valueAsNumber: true })}
                               sx={{
                                 '& .MuiOutlinedInput-root': {
-                                  background: 'rgba(15, 23, 42, 0.5)',
+                                  background: 'var(--pp-dark-50)',
                                 },
                               }}
                             />
@@ -301,7 +301,7 @@ export default function PTWScenarioForm({
                               {...register(`labor_categories.${index}.hours` as const, { valueAsNumber: true })}
                               sx={{
                                 '& .MuiOutlinedInput-root': {
-                                  background: 'rgba(15, 23, 42, 0.5)',
+                                  background: 'var(--pp-dark-50)',
                                 },
                               }}
                             />
