@@ -107,9 +107,10 @@ jobs:
           az containerapp update \
             --name "${{ secrets.ACA_PIPELINEPRO_API_APP_NAME }}" \
             --resource-group "${{ secrets.ACA_RESOURCE_GROUP }}" \
-            --set-env-vars CORS_ORIGINS="${{ secrets.ACA_CORS_ORIGINS }}"
+            --set-env-vars 'CORS_ORIGINS=${{ secrets.ACA_CORS_ORIGINS }}'
 
           az containerapp update \
             --name "${{ secrets.ACA_EKCHAT_API_APP_NAME }}" \
             --resource-group "${{ secrets.ACA_RESOURCE_GROUP }}" \
-            --set-env-vars CORS_ORIGINS="${{ secrets.ACA_CORS_ORIGINS }}"
+            --set-env-vars 'CORS_ORIGINS=${{ secrets.ACA_CORS_ORIGINS }}'
+
